@@ -8,8 +8,10 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
+APPACHEDIR="/etc/apache2/sites-available"
 
-rm /etc/apache2/site-available/mpri.puyral.ml.conf &&\
-    cp $DIR/mpri.puyral.ml.conf /etc/apache2/site-available/mpri.puyral.ml.conf && \
+
+rm $APPACHEDIR/mpri.puyral.ml.conf &&\
+    cp $DIR/mpri.puyral.ml.conf $APPACHEDIR/mpri.puyral.ml.conf && \
     a2dissite mpri.puyral.ml.conf && a2ensite mpri.puyral.ml.conf && \
     systemctl reload apache2
