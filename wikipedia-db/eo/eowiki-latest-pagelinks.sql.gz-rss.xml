@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+        <channel>
+                <title>pagelinks.sql.gz</title>
+                <link>http://download.wikimedia.org/eowiki/20210120</link>
+                <description>Wikimedia dump updates for eowiki</description>
+                <item>
+                        <title>http://download.wikimedia.org/eowiki/20210120</title>
+                        <link>http://download.wikimedia.org/eowiki/20210120</link>
+                        <description>&lt;a href="http://download.wikimedia.org/eowiki/20210120/eowiki-20210120-pagelinks.sql.gz"&gt;eowiki-20210120-pagelinks.sql.gz&lt;/a&gt;</description>
+                        <pubDate>Fri, 22 Jan 2021 12:03:57 GMT</pubDate>
+                </item>
+        </channel>
+</rss>

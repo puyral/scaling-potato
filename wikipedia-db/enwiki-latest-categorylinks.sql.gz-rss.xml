@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+        <channel>
+                <title>categorylinks.sql.gz</title>
+                <link>http://download.wikimedia.org/enwiki/20210120</link>
+                <description>Wikimedia dump updates for enwiki</description>
+                <item>
+                        <title>http://download.wikimedia.org/enwiki/20210120</title>
+                        <link>http://download.wikimedia.org/enwiki/20210120</link>
+                        <description>&lt;a href="http://download.wikimedia.org/enwiki/20210120/enwiki-20210120-categorylinks.sql.gz"&gt;enwiki-20210120-categorylinks.sql.gz&lt;/a&gt;</description>
+                        <pubDate>Fri, 22 Jan 2021 15:50:37 GMT</pubDate>
+                </item>
+        </channel>
+</rss>
