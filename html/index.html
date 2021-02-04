@@ -4,23 +4,227 @@
   <head>
     <meta charset="utf-8" />
 
-    <title>Ça marche</title>
+
+    <title>WikiUsers Info</title>
+
+
     <meta name="description" content="The HTML5 Herald" />
     <meta name="author" content="SitePoint" />
 
     <link rel="stylesheet" href="css/styles.css?v=1.0" />
   </head>
 
-  <body>
-    youpi !
-    <img
-      src="https://www.indiewire.com/wp-content/uploads/2015/02/homer-simpson.jpg"
-      alt="woohoo"
-    />
-    <br />
-    TEST xD
-    <img
-      src="https://i.insider.com/56e1bdd7dd0895f80b8b4589?width=1100&format=jpeg&auto=webp"
-    />
-  </body>
+<body>
+    <h1>Get all the users info</h1>
+
+    <p>Research now the pseudo of a wikipedia users to get his all profile.</p>
+
+
+    <!-- Button for selecting users -->
+
+    <input type="text" placeholder=" UsersName : " id="usersName">
+    <input type="text" placeholder=" fr or en? : " id="language">
+    <button type="button" onclick="getValue();">Go !</button>
+    
+
+
+
+    <!-- General info about the users -->
+    <p id="name"></p>
+    <p id="blockinfo"></p>
+    <p id="groups"></p>
+    <p id="editcount"></p>
+    <p id="registration"></p>
+    <p id="emailable"></p>
+    <p id="gender"></p>
+
+    <!-- All the queries he did  -->
+
+    <p id="infoE">......</p>
+
+
+</body>
+
 </html>
+
+
+
+<script type="text/javascript">
+    
+
+    function getValue() {  /* function to get the value in the input*/ 
+
+
+        var usersName = document.getElementById("usersName").value;
+        var language = document.getElementById("language").value;
+
+        changeThings(usersName,language);
+    }
+
+    function changeThings(usersName,language){ /*To update with the value that we get from the input*/
+
+        /* We construct the first url , to get the info about the user*/
+        var url = "https://"+ language+ ".wikipedia.org/w/api.php"; 
+        var params = {
+            action: "query",
+            list: "users",
+            ususers: usersName,
+            usprop: "blockinfo|groups|editcount|registration|emailable|gender",
+            format: "json"
+        };
+
+        url = url + "?origin=*";
+        Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});   
+        console.log(url);
+        fetch(url)
+            .then(function(response){return response.json();})
+            .then(function(response) {
+                /*Define all the variables usefull to show after*/
+                var users = response.query.users;
+                var xname = users[0].name;
+                var xblockinfo = users[0].blockinfo;
+                var xgroups = users[0].groups;
+                var xeditcount = users[0].editcount;
+                var xregistration = users[0].registration;
+                var xemailable = users[0].emailable;
+                var xgender = users[0].gender;
+                /*Show the different value*/
+                document.getElementById("name").innerHTML =
+                    " <strong> Nom de l'utilisateur : </strong> " +xname;
+                document.getElementById("blockinfo").innerHTML =
+                    " " +xblockinfo;
+                document.getElementById("groups").innerHTML =
+                    "<strong>Groupe de l'utilisateur : </strong> " +xgroups;
+                document.getElementById("editcount").innerHTML =
+                    "<strong>Nombre d'édits de l'utilisateur : </strong> " +xeditcount;
+                document.getElementById("registration").innerHTML =
+                    "<strong> Date d'enregistrement sur wikipedia : </strong> " +xregistration;
+                document.getElementById("emailable").innerHTML =
+                    " <strong>Email, si renseigné : </strong> " +xemailable;
+
+            })
+
+        /*Second request to get the different queries of that user*/
+        var url = "https://"+ language+ ".wikipedia.org/w/api.php"; 
+        var params = {
+            action: "query",
+            list: "usercontribs",
+            ucuser: usersName,
+            ucprop: "ids|title|comment|size|sizediff|timestamp|tags",
+            format: "json",
+            ucshow:"!minor",
+            uclimit:"5"
+        };
+
+        url = url + "?origin=*";
+        Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];}); /*Constructing the url*/
+        console.log(url);
+
+        fetch(url)
+            .then(function(response){return response.json();})
+            .then(function(response) {
+                var usercontribs = response.query.usercontribs; 
+                var x = ""; /*x will contain all the queries of the users and then will be print in the infoE*/
+
+
+
+                usersC = usercontribs.sort(function(a,b){   /*We sort the contribution by the absolute value of delta size */
+                    if (Math.abs(a.sizediff) < Math.abs(b.sizediff) ){ return 1; } 
+                    if (Math.abs(a.sizediff) > Math.abs(b.sizediff) ){ return -1;}
+                    return 0; 
+                })
+
+
+
+
+
+                var L = "";
+                for (var u in usercontribs){
+                    if (usercontribs[u].title.indexOf(":") == -1 ){
+                    L+="|"+usercontribs[u].title;}
+                }
+                L = L.substring(1,L.length);
+                console.log(L);
+
+
+
+
+                    
+
+                /* For each pages that the user has edited, we research for the category*/
+                var url = "https://"+language+".wikipedia.org/w/api.php"; 
+                var params = {
+                    action: "query",
+                    format: "json",
+                    prop: "categories",
+                    clshow: "!hidden",
+                    cllimit:500,
+                    titles: L
+                };
+
+                url = url + "?origin=*";
+                Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+                let categ = ""; /*Variable that will contains all the categories of these page*/
+                let usercontribsu = usercontribs[u];
+                console.log(url);
+                fetch(url)   /*from here it start to bug I don't know why. Maybe there is some latency in the response to the different queries, maybe I shuold wait for the timing to get the response ? */
+                    .then(function(response){return response.json();})
+                    .then(function(response) {
+                        var pages = response.query.pages;
+                       
+
+                        var L = {};
+
+
+                        for (var p in pages) {
+                            let categ = "";
+                            
+                            for (var cat of pages[p].categories) {
+                                categ += cat.title+"  ;  " ; /* We add the categories*/
+                            }
+
+                            L[pages[p].title]=categ;
+
+                           
+
+                        }
+                        
+                        /*We add all the différent informations about the edit in x*/
+
+
+
+                        console.log(L);
+
+
+
+                        for (var u in usersC){
+
+                            if (usercontribs[u].title.indexOf(":") == -1 ){
+                                 x += "<strong>  " + usercontribs[u].user + "</strong> on the <strong>"  + usercontribs[u].timestamp  + "</strong> edit the following page : <strong>" + usercontribs[u].title + "</strong>." + "The delta size is  <strong>" + usercontribs[u].sizediff + "</strong> between the last version and these one." + "The tag is then : " + usercontribs[u].tags + "." + "The page is in various categories such as : <strong>" + L[usercontribs[u].title] + "</strong>" ;
+
+                                x += "<br />";
+                            }
+                        }
+
+                    
+
+
+
+                            
+                        document.getElementById("infoE").innerHTML = "" +x;
+                                         
+
+                    })
+
+/*Chaos is ladder*/
+          
+                    
+                
+
+
+    })
+
+    }
+
+</script>
+
