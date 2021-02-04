@@ -1,6 +1,9 @@
 pub mod extractor;
 pub mod category;
 
+//! The sql extraction
+
+
 #[cfg(test)]
 mod tests {
     use std::collections::VecDeque;
