@@ -1,5 +1,5 @@
 use std::fs;
-use preprocessor::sql_extracts::extract;
+use preprocessor::extract;
 
 
 fn main() {
