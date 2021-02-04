@@ -1,7 +1,8 @@
+//! The sql extraction
+
 pub mod extractor;
 pub mod category;
 
-//! The sql extraction
 
 
 #[cfg(test)]

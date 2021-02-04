@@ -7,5 +7,9 @@ fn main() {
         .expect("Something went wrong reading the file");
 
     //println!("{}", contents);
-    extract(&contents);
+    let vect = extract(&contents);
+
+    for v in vect{
+        println!("{:?}", v)
+    }
 }

@@ -5,9 +5,9 @@ use crate::sql_extracts::category::Category;
 mod sql_extracts;
 
 
-pub fn extract(text: &str) -> () {
+pub fn extract(text: &str) -> VecDeque<Category> {
     let extractor = Extractor::new::<Category>().unwrap();
     let mut vect: VecDeque<Category> = VecDeque::new();
     extractor.extract(text, &mut vect);
-    println!("{:?}", vect.len());
+    return vect;
 }
