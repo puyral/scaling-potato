@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use regex::Captures;
 
 use crate::sql_extracts::extractor::SqlExtractable;
@@ -34,22 +32,14 @@ impl SqlExtractable for Category {
 
 //---- CATEGORY_CATEGORY -----
 
-/// An edge in the graph of the category
-#[derive(Debug)]
-#[derive(PartialEq)]
-pub struct CategoryCategory {
-	pub from: u32,
-	pub to: u32,
-}
-
 
 /// Because Wikipedia decided to have a structure id -> name (*yay....*) we must use this
 /// temporary type to extract the sql
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct CategoryCategorySql {
-	from: u32,
-	to: String,
+	pub from: u32,
+	pub to: String,
 }
 
 impl SqlExtractable for CategoryCategorySql {
@@ -60,22 +50,6 @@ impl SqlExtractable for CategoryCategorySql {
 		CategoryCategorySql {
 			from: cap["from"].parse::<u32>().unwrap(),
 			to: String::from(&cap["to"]),
-		}
-	}
-}
-
-impl CategoryCategory {
-	/// Builds from a [CategoryCategorySql] and [Category]
-	fn from(from: &CategoryCategorySql, to: &Category) -> CategoryCategory {
-		CategoryCategory { from: from.from, to: to.id }
-	}
-
-	/// Same as [Self](from_add) but retrieves the `cat_to`from a [HashMap] to make up for wikipedia's stupid design....
-	pub fn from_hash<'a>(cat_from: &'a CategoryCategorySql, categories: &'a HashMap<String, Category>)
-						 -> Option<CategoryCategory> {
-		match categories.get(&cat_from.to) {
-			None => None,
-			Some(cat_to) => Some(Self::from(cat_from, cat_to))
 		}
 	}
 }

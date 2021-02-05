@@ -21,27 +21,32 @@ impl CategoryCategoryVec {
 	pub fn search(&self, str: &str) -> &[CategoryCategorySql] {
 		let (mut i, mut j) = (0, self.vec.len() - 1);
 
-		if (self.vec[i].to > str.to_string()) | (self.vec[j].to < str.to_string()) {
+		if (self.vec[i].to > str.to_string()) || (self.vec[j].to < str.to_string()) {
 			return &self.vec[0..0];
 		}
 
 		let mut c: usize;
 
-		while (i < j) & (!self.vec[i].to.eq(&self.vec[j].to)) {
+		while (i < j) && (!self.vec[i].to.eq(&self.vec[j].to)) {
 			c = (i + j) / 2;
+
+			if (c == j) || (c == i) { return &self.vec[0..0]; }
 			match str.cmp(&self.vec[c].to) {
 				Ordering::Less => j = c,
 				Ordering::Greater => i = c,
 				Ordering::Equal => {
 					i = c;
 					j = c;
-					while (i > 0) & (self.vec[i].to.eq(str)) { i -= 1 }
+					while (i > 0) && (self.vec[i].to.eq(str)) { i -= 1 }
 					i += 1;
-					while (j < self.vec.len()) & (self.vec[j].to.eq(str)) { j += 1 }
+					while (j < self.vec.len()) && (self.vec[j].to.eq(str)) {
+						j += 1
+					}
 					break;
 				}
 			}
 		}
+
 
 		&self.vec[i..j]
 	}
@@ -112,9 +117,9 @@ mod tests {
 
 		let v = CategoryCategoryVec::from_par_iter(t);
 
-		let v2 = v.search("q");
-		assert_eq!(v2, &[
+		assert_eq!(v.search("q"), &[
 			CategoryCategorySql { from: 0, to: "q".parse().unwrap() },
-			CategoryCategorySql { from: 13, to: "q".parse().unwrap() }])
+			CategoryCategorySql { from: 13, to: "q".parse().unwrap() }]);
+		assert_eq!(v.search("greg"), &[]);
 	}
 }

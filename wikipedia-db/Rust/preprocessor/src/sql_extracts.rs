@@ -1,52 +1,73 @@
 //! The sql extraction
 
 
-use std::collections::HashMap;
-use std::fs::File;
 
-use rayon::prelude::*;
-
-use crate::sql_extracts::categories::{Category, CategoryCategory, CategoryCategorySql};
+use crate::algebra::NonZeroCoeff;
+use crate::sql_extracts::categories::Category;
 use crate::sql_extracts::categories::category_category_vec::CategoryCategoryVec;
-use crate::sql_extracts::extractor::Extractor;
 
 pub mod extractor;
 pub mod categories;
 
 pub fn merge_categories_links_triplets<'a>(
-	categories: &'a impl ParallelIterator<Item = Category>,
-	catcats: CategoryCategoryVec, //sorted array
-) -> impl ParallelIterator<Item = CategoryCategory> + 'a
+	categories: &'a Vec<Category>,
+	catcats: &'a CategoryCategoryVec, //sorted array
+) -> impl Iterator<Item = NonZeroCoeff> + 'a
 {
-	categories.flat_map_iter(|cat| {})
-}
+	categories.iter().flat_map(move |cat| {
+		let v = catcats.search(&cat.title);
+		let n = v.len();
 
-pub fn make_categories_links(
-	categoriesf: File, catcatsf: File,
-) -> impl ParallelIterator<Item = CategoryCategory>
-{
-	merge_categories_links(
-		Extractor::extract_par_iter_file(categoriesf),
-		CategoryCategoryVec::from_par_iter(Extractor::extract_par_iter_file(catcatsf)),
-	)
+		v.into_iter().map(move |catcat| {
+			NonZeroCoeff::new(catcat.from, cat.id, n as u32)
+		})
+	})
 }
 
 #[cfg(test)]
 mod tests {
-	//TODO create test and test file to test mixing both the categories and the links
+	use std::fs::File;
+	use std::iter::FromIterator;
 
-	// #[test]
-	// fn parallel() -> () {
-	// 	let v = Vec::from_par_iter(make_categories_links(
-	// 		File::open("test_samples/nrm/nrmwiki-20210201-category.sql")
-	// 			.expect("Something went wrong reading the file category"),
-	// 		File::open("test_samples/nrm/nrmwiki-20210201-categorylinks.sql")
-	// 			.expect("Something went wrong reading the file categorylinks"),
-	// 	));
-	//
-	// 	assert_eq!(CategoryCategory { from: 9310, to: 5629 }, v[89]);
-	// 	assert_eq!(CategoryCategory { from: 2507, to: 10 }, v[7]);
-	// 	assert_eq!(CategoryCategory { from: 10251, to: 1938 }, v[120]);
-	// 	assert_eq!(147, v.len());
-	// }
+	use rayon::prelude::FromParallelIterator;
+
+	use crate::algebra::NonZeroCoeff;
+	use crate::sql_extracts::categories::{Category, CategoryCategorySql};
+	use crate::sql_extracts::categories::category_category_vec::CategoryCategoryVec;
+	use crate::sql_extracts::extractor::Extractor;
+	use crate::sql_extracts::merge_categories_links_triplets;
+
+	#[test]
+	fn parallel() -> () {
+		let categories = Vec::from_par_iter(
+			Extractor::extract_par_iter_file::<Category>(
+				File::open("test_samples/nrm/nrmwiki-20210201-category.sql")
+					.expect("Something went wrong reading the file category")));
+		let catcat = CategoryCategoryVec::from_par_iter(
+			Extractor::extract_par_iter_file::<CategoryCategorySql>(
+				File::open("test_samples/nrm/nrmwiki-20210201-categorylinks.sql")
+					.expect("Something went wrong reading the file categorylinks")));
+
+		let v =
+			Vec::from_iter(merge_categories_links_triplets(&categories, &catcat));
+
+		// println!("assert_eq!({},v.len());",v.len());
+		// v[5..13].iter().for_each(|nzc|println!("{},",nzc.serialize()))
+
+		assert_eq!(146, v.len());
+		assert_eq!(v[5], NonZeroCoeff::new(3133, 14, 6));
+		assert_eq!(v[6], NonZeroCoeff::new(5594, 14, 6));
+		assert_eq!(v[7], NonZeroCoeff::new(5963, 14, 6));
+		assert_eq!(v[8], NonZeroCoeff::new(10160, 14, 6));
+		assert_eq!(v[9], NonZeroCoeff::new(10252, 14, 6));
+		assert_eq!(v[10], NonZeroCoeff::new(10340, 14, 6));
+		assert_eq!(v[11], NonZeroCoeff::new(1902, 15, 3));
+		assert_eq!(v[12], NonZeroCoeff::new(2456, 15, 3));
+		assert_eq!(v[13], NonZeroCoeff::new(5797, 15, 3));
+		assert_eq!(v[14], NonZeroCoeff::new(6893, 22, 1));
+
+		// for i in 5..15 {
+		// 	println!("assert_eq!(v[{}],{});", i, v[i].serialize())
+		// }
+	}
 }
