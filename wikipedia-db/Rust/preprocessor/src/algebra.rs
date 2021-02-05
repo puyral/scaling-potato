@@ -1,3 +1,6 @@
+mod lib;
+mod random_surfer;
+
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct NonZeroCoeff {
