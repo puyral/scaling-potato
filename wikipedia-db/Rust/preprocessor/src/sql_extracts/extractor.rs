@@ -1,8 +1,9 @@
 use std::collections::VecDeque;
 use std::fs::File;
 use std::io::BufRead;
+use std::iter::FromIterator;
 
-use rayon::prelude::{ParallelBridge, ParallelIterator};
+use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
 use regex::{Captures, Regex};
 
 /// A tool to
@@ -29,19 +30,21 @@ impl Extractor {
 	}
 
 	pub fn extract_par_iter_file<'a, T>(file: File) -> impl ParallelIterator<Item = T> + 'a
-										where T: SqlExtractable {
+										where T: SqlExtractable + Send + Sync {
 		std::io::BufReader::new(file)                        // read the file
 			.lines()                    // split to lines serially
 			.filter_map(|line: Result<String, _>| line.ok())    // remove broken lines
 			.par_bridge()                // parallelize
-			.flat_map_iter(|sql| Extractor::new::<T>().unwrap().extract_iter::<T>(&sql))    // do the work
+			.flat_map(|sql| {
+				Vec::from_iter(Extractor::new::<T>().unwrap().extract_iter::<T>(&sql)).into_par_iter()
+			})    // do the work
 	}
 }
 
 pub trait SqlExtractable {
 	/// The regexp to match the sql INSERT querry.
 	/// # Example
-	/// for the categories this is
+	/// for the categories this used to be
 	/// ```rust
 	/// r"(?P<id>\d+),'(?P<title>.*?)',\d+,\d+,\d+";
 	/// ```
