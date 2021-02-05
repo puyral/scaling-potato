@@ -1,5 +1,8 @@
 use std::collections::VecDeque;
+use std::fs::File;
+use std::io::BufRead;
 
+use rayon::prelude::{ParallelBridge, ParallelIterator};
 use regex::{Captures, Regex};
 
 /// A tool to
@@ -15,15 +18,23 @@ impl Extractor {
 		queue.extend(self.extract_iter(sql))
 	}
 
-	pub fn extract_iter<'a, T>(&'a self, sql: &'a str) -> impl Iterator<Item = T> + 'a
-							   where T: SqlExtractable
-	{
+	pub fn extract_iter<'a, T: SqlExtractable>(&'a self, sql: &'a str) -> impl Iterator<Item = T> + 'a {
 		self.rg.captures_iter(sql).map(|cap| { T::from(cap) })
 	}
+
 	/// Make a new [Extractor]. Make sure to tell what `T` when using this
 	pub fn new<T: SqlExtractable>() -> Result<Self, regex::Error> {
 		let rg = Regex::new(&format!("\\({}\\)", T::PATTERN))?;
 		return Ok(Self { rg });
+	}
+
+	pub fn extract_par_iter_file<'a, T>(file: File) -> impl ParallelIterator<Item = T> + 'a
+										where T: SqlExtractable {
+		std::io::BufReader::new(file)                        // read the file
+			.lines()                    // split to lines serially
+			.filter_map(|line: Result<String, _>| line.ok())    // remove broken lines
+			.par_bridge()                // parallelize
+			.flat_map_iter(|sql| Extractor::new::<T>().unwrap().extract_iter::<T>(&sql))    // do the work
 	}
 }
 

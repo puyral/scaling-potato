@@ -15,7 +15,8 @@ information from them.
 
 ## Structure
 
-The files [linesample](linesample) and [linesample_links](linesample_links) are one-line extract of the the Wikipedia in
+The files [linesample](preprocessor/test_samples/one_line_categories)
+and [linesample_links](preprocessor/test_samples/one_line_categorieslinks) are one-line extract of the the Wikipedia in
 Esperanto used for the tests.
 
 Otherwise we are trying to keep the Rust part of the project as compliant with the convention as we can. Thus,
