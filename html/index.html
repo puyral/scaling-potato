@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -77,24 +78,12 @@
             <!--<p id="infoE"></p> -->
 
 
+            <div class="container" id="tab">
 
+            
 
-            <div class="row">
-
-                <div class="col bg-info" > Page </div>
-                <div class="col bg-info" > Jour de l'édit </div>
-                <div class="col bg-info" > DeltaSize </div>
-                <div class="col bg-info" > Categories </div>
 
             </div>
-
-            <div class="row">
-
-                <div class="col bg-info" id = "PagesEdits"></div>
-                <div class="col bg-info" id = "DaysEdits"></div>
-                <div class="col bg-info" id = "DeltaEdits"></div>
-                <div class="col bg-info" id = "CategoriesEdits"></div>
-
 
             </div>
 
@@ -275,27 +264,30 @@
                         console.log(L);
 
 
+                        document.getElementById("tab").innerHTML = "<div class='row'> <div class='col bg-info' > Page </div> <div class='col bg-info' > Jour de l'édit </div> <div class='col bg-info' > DeltaSize </div> <div class='col bg-info' > Categories </div></div>";
 
+           
                         for (var u in usersC){
 
 
-                            PagesEdits += usercontribs[u].title+"<br />";
-                            DaysEdits += usercontribs[u].timestamp + "<br />";
-                            DeltaEdits += usercontribs[u].sizediff+"<br />";
-                            CategoriesEdits += L[usercontribs[u].title]+"<br />";
+                            PagesEdit = usercontribs[u].title;
+                            DaysEdit = usercontribs[u].timestamp ;
+                            DeltaEdit = usercontribs[u].sizediff;
+                            CategoriesEdit = L[usercontribs[u].title];
 
                             /*
                              x += "<strong>  " + usercontribs[u].user + "</strong> on the <strong>"  + usercontribs[u].timestamp  + "</strong> edit the following page : <strong>" + usercontribs[u].title + "</strong>." + "The delta size is  <strong>" + usercontribs[u].sizediff + "</strong> between the last version and these one." + "The tag is then : " + usercontribs[u].tags + "." + "The page is in various categories such as : <strong>" + L[usercontribs[u].title] + "</strong>" ;
 
                             x += "<br />";*/
                             
-                        }
+                
                         /**/
                     
-                        document.getElementById("PagesEdits").innerHTML = "" +PagesEdits;
-                        document.getElementById("DaysEdits").innerHTML = "" +DaysEdits;
-                        document.getElementById("DeltaEdits").innerHTML = "" +DeltaEdits;
-                        document.getElementById("CategoriesEdits").innerHTML = "" +CategoriesEdits;
+
+                        document.getElementById("tab").innerHTML += "<div class='row'> <div class='col bg-info' >"+PagesEdit+"</div> <div class='col bg-info' >"+DaysEdit+"  </div> <div class='col bg-info' > "+DeltaEdit+" </div> <div class='col bg-info' > "+CategoriesEdit+" </div></div>";
+
+                        
+                                }
                             /*
                         document.getElementById("infoE").innerHTML = "" +x;
                                          */
