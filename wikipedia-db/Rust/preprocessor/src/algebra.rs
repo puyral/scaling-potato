@@ -1,5 +1,8 @@
 mod lib;
-mod random_surfer;
+mod page_rank;
+
+#[cfg(test)]
+mod tests;
 
 #[derive(Debug)]
 #[derive(PartialEq)]
