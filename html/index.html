@@ -1,50 +1,108 @@
+
 <!DOCTYPE html>
-
-<html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-
-
-    <title>WikiUsers Info</title>
-
-
-    <meta name="description" content="The HTML5 Herald" />
-    <meta name="author" content="SitePoint" />
-
-    <link rel="stylesheet" href="css/styles.css?v=1.0" />
-  </head>
-
-<body>
-    <h1>Get all the users info</h1>
-
-    <p>Research now the pseudo of a wikipedia users to get his all profile.</p>
-
-
-    <!-- Button for selecting users -->
-
-    <input type="text" placeholder=" UsersName : " id="usersName">
-    <input type="text" placeholder=" fr or en? : " id="language">
-    <button type="button" onclick="getValue();">Go !</button>
-    
+<html>
+    <head>
+        <title>Cours Complet Bootstrap 4</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <style>
+            .custom-line{
+                min-height: 5rem;
+                margin-bottom: 1rem;
+                background-color: RGBa(60,240,160,0.7); /*Vert*/
+            }
+            .custom-line > .col{
+                background-color: RGBa(60,120,240,0.7); /*Bleu*/
+            }
+        </style>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
 
 
 
-    <!-- General info about the users -->
-    <p id="name"></p>
-    <p id="blockinfo"></p>
-    <p id="groups"></p>
-    <p id="editcount"></p>
-    <p id="registration"></p>
-    <p id="emailable"></p>
-    <p id="gender"></p>
+    <!-- Optional JavaScript -->
 
-    <!-- All the queries he did  -->
+        <!--Les classes bg-info et mb-3 servent à appliquer un fond bleu et une marge extérieure basse de 
+         taille moyenne au div-->
 
-    <p id="infoE">......</p>
+        <!--La classe border ajoute des bordures grises autour de l'élément--> <div class="container">
+            
+             <div class="container">
+           <!--Les classes .p-3 et .mb-2 servent simplement à définir un 
+           padding et une marge extérieure basse pour séparer nos divs.
+           La classe border permet d'ajouter des bordures-->
+
+        <h1>Get all the users info</h1>
+
+            
+
+            <!-- Button for selecting users -->
+
+            <form>
+               <fieldset>
+                 <legend>Research now the pseudo of a wikipedia users to get all his profile.</legend>
+                 
+                 <div class="form-group">
+                   <label for="nom">Users Name : </label>
+                   <input type="text" class="form-control" id="usersName" placeholder="A3nm">
+                 </div>
+                 
+                 <div class="form-group">
+                   <label for="email">Language?</label>
+                   <input type="text" class="form-control" id="language" placeholder="fr">
+                 </div>
+                 
+               </fieldset>
+             </form>
 
 
-</body>
+            <button type="button" class ="btn btn-success mb-2" onclick="getValue();">Go !</button>
+            
 
+            <!-- General info about the users -->
+            <p id="name"></p>
+            <p id="blockinfo"></p>
+            <p id="groups"></p>
+            <p id="editcount"></p>
+            <p id="registration"></p>
+            <p id="emailable"></p>
+            <p id="gender"></p>
+
+            <!-- All the queries he did  -->
+
+            <!--<p id="infoE"></p> -->
+
+
+
+
+            <div class="row">
+
+                <div class="col bg-info" > Page </div>
+                <div class="col bg-info" > Jour de l'édit </div>
+                <div class="col bg-info" > DeltaSize </div>
+                <div class="col bg-info" > Categories </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col bg-info" id = "PagesEdits"></div>
+                <div class="col bg-info" id = "DaysEdits"></div>
+                <div class="col bg-info" id = "DeltaEdits"></div>
+                <div class="col bg-info" id = "CategoriesEdits"></div>
+
+
+            </div>
+
+
+
+       </div>
+     
+    </body>
 </html>
 
 
@@ -113,7 +171,8 @@
             ucprop: "ids|title|comment|size|sizediff|timestamp|tags",
             format: "json",
             ucshow:"!minor",
-            uclimit:"5"
+            uclimit:"5",
+            ucnamespace:"0"
         };
 
         url = url + "?origin=*";
@@ -124,10 +183,16 @@
             .then(function(response){return response.json();})
             .then(function(response) {
                 var usercontribs = response.query.usercontribs; 
-                var x = ""; /*x will contain all the queries of the users and then will be print in the infoE*/
+                /*var x = ""; /* The following variable will contain all the important info about the queries of the users and then will be print in the different columns */
+
+                var PagesEdits = "";
+                var DaysEdits = "";
+                var DeltaEdits = "";
+                var CategoriesEdits = "";
 
 
-
+                console.log(usercontribs);
+                console.log("MERDEEEEE");
                 usersC = usercontribs.sort(function(a,b){   /*We sort the contribution by the absolute value of delta size */
                     if (Math.abs(a.sizediff) < Math.abs(b.sizediff) ){ return 1; } 
                     if (Math.abs(a.sizediff) > Math.abs(b.sizediff) ){ return -1;}
@@ -140,9 +205,10 @@
 
                 var L = "";
                 for (var u in usercontribs){
-                    if (usercontribs[u].title.indexOf(":") == -1 ){
-                    L+="|"+usercontribs[u].title;}
+                    
+                    L+="|"+usercontribs[u].title;
                 }
+                
                 L = L.substring(1,L.length);
                 console.log(L);
 
@@ -178,12 +244,25 @@
 
                         for (var p in pages) {
                             let categ = "";
-                            
-                            for (var cat of pages[p].categories) {
+
+
+                            try {
+
+                                for (var cat of pages[p].categories) {
                                 categ += cat.title+"  ;  " ; /* We add the categories*/
+                                }
+
+                                L[pages[p].title]=categ;
+
+
+                            } catch(TypeError) {
+
+                                categ = "";
+
                             }
 
-                            L[pages[p].title]=categ;
+
+                            
 
                            
 
@@ -199,20 +278,27 @@
 
                         for (var u in usersC){
 
-                            if (usercontribs[u].title.indexOf(":") == -1 ){
-                                 x += "<strong>  " + usercontribs[u].user + "</strong> on the <strong>"  + usercontribs[u].timestamp  + "</strong> edit the following page : <strong>" + usercontribs[u].title + "</strong>." + "The delta size is  <strong>" + usercontribs[u].sizediff + "</strong> between the last version and these one." + "The tag is then : " + usercontribs[u].tags + "." + "The page is in various categories such as : <strong>" + L[usercontribs[u].title] + "</strong>" ;
 
-                                x += "<br />";
-                            }
-                        }
+                            PagesEdits += usercontribs[u].title+"<br />";
+                            DaysEdits += usercontribs[u].timestamp + "<br />";
+                            DeltaEdits += usercontribs[u].sizediff+"<br />";
+                            CategoriesEdits += L[usercontribs[u].title]+"<br />";
 
-                    
+                            /*
+                             x += "<strong>  " + usercontribs[u].user + "</strong> on the <strong>"  + usercontribs[u].timestamp  + "</strong> edit the following page : <strong>" + usercontribs[u].title + "</strong>." + "The delta size is  <strong>" + usercontribs[u].sizediff + "</strong> between the last version and these one." + "The tag is then : " + usercontribs[u].tags + "." + "The page is in various categories such as : <strong>" + L[usercontribs[u].title] + "</strong>" ;
 
-
-
+                            x += "<br />";*/
                             
+                        }
+                        /**/
+                    
+                        document.getElementById("PagesEdits").innerHTML = "" +PagesEdits;
+                        document.getElementById("DaysEdits").innerHTML = "" +DaysEdits;
+                        document.getElementById("DeltaEdits").innerHTML = "" +DeltaEdits;
+                        document.getElementById("CategoriesEdits").innerHTML = "" +CategoriesEdits;
+                            /*
                         document.getElementById("infoE").innerHTML = "" +x;
-                                         
+                                         */
 
                     })
 
@@ -227,4 +313,3 @@
     }
 
 </script>
-
