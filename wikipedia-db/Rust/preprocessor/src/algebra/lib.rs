@@ -24,7 +24,7 @@ use crate::algebra::NonZeroCoeff;
 // }
 
 pub fn make_matrix(nzcs: impl ParallelIterator<Item = (u32, u32, f64)>, dimension: usize) -> CsMatI<f64, u32> {
-	let ((col_ind, row_ind), data): ((Vec<_>, Vec<_>), Vec<_>)
+	let ((col_inds, row_inds), data): ((Vec<_>, Vec<_>), Vec<_>)
 		= nzcs.flat_map(|(x, y, z)| {
 		vec![(Some(x), None, None), (None, Some(y), None), (None, None, Some(z))]
 	}).partition_map(|v| {
@@ -32,20 +32,14 @@ pub fn make_matrix(nzcs: impl ParallelIterator<Item = (u32, u32, f64)>, dimensio
 			(Some(x), None, None) => Left(Left(x)),
 			(None, Some(y), None) => Left(Right(y)),
 			(None, None, Some(z)) => Right(z),
-			_ => panic!("impossible")
+			_ => panic!("unreachable")
 		}
 	});
 
-	// nzcs.for_each(|nzc| {
-	// 	col_ind.push(nzc.0);
-	// 	row_ind.push(nzc.1);
-	// 	data.push(nzc.2);
-	// });
-
 	TriMatI::from_triplets(
 		(dimension, dimension),
-		row_ind,
-		col_ind,
+		row_inds,
+		col_inds,
 		data,
 	).to_csc()
 }

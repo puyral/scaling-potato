@@ -10,7 +10,7 @@ use crate::sql_extracts::extractor::Extractor;
 use crate::sql_extracts::merge_categories_links_triplets;
 
 mod sql_extracts;
-mod algebra;
+pub mod algebra;
 
 
 pub fn extract(text: String) -> VecDeque<Category> {

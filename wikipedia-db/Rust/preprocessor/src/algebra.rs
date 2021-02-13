@@ -1,5 +1,5 @@
 mod lib;
-mod page_rank;
+pub mod page_rank;
 
 #[cfg(test)]
 mod tests;
