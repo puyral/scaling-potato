@@ -34,6 +34,6 @@ pub fn run(categoriesf: File, catcatsf: File) {
 	let catcat = CategoryCategoryVec::from_par_iter(
 		Extractor::extract_par_iter_file::<CategoryCategorySql>(catcatsf));
 
-	let _cells =
+	let cells =
 		merge_categories_links_triplets(&categories, &catcat);
 }

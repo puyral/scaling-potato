@@ -22,4 +22,8 @@ impl NonZeroCoeff {
 	pub fn serialize(&self) -> String {
 		format!("NonZeroCoeff::new({},{},{})", self.from, self.to, self.n)
 	}
+
+	pub fn to_tuple_calculate(&self) -> (u32, u32, f64) {
+		(self.from, self.to, 1.0 / (self.n as f64))
+	}
 }

@@ -23,6 +23,8 @@ use crate::algebra::NonZeroCoeff;
 // 	).to_csc()
 // }
 
+
+/// (from, to, _)
 pub fn make_matrix(nzcs: impl ParallelIterator<Item = (u32, u32, f64)>, dimension: usize) -> CsMatI<f64, u32> {
 	let ((col_inds, row_inds), data): ((Vec<_>, Vec<_>), Vec<_>)
 		= nzcs.flat_map(|(x, y, z)| {
