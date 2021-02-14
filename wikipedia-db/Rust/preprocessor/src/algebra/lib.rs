@@ -70,10 +70,13 @@ pub fn collect(matrix: CsMatI<f64, u32>, vec: CsVecI<f64, u32>) -> Vec<NonZeroCo
 	let tmp: HashMap<_, _> = vec.iter().collect();
 	Vec::from_iter(matrix.outer_iterator().enumerate()
 		.filter_map(|(row_ind, row_vec)| {
-			Some(NonZeroCoeffF::new(
-				row_ind,
-				row_vec.iter().max_by_key(|(i, _)| OrderedFloat(**tmp.get(i).unwrap_or(&&0.0))).unwrap().0,
-				**tmp.get(&row_ind).unwrap(),
-			))
+			match row_vec.iter().max_by_key(|(i, _)| OrderedFloat(**tmp.get(i).unwrap_or(&&0.0))) {
+				None => None,
+				Some((id, _)) => Some(NonZeroCoeffF::new(
+					row_ind,
+					id,
+					**tmp.get(&row_ind).unwrap(),
+				))
+			}
 		}))
 }

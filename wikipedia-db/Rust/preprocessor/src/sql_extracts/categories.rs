@@ -19,8 +19,8 @@ impl Default for Category {
 }
 
 impl SqlExtractable for Category {
-	const PATTERN: &'static str = r"(?P<id>\d+),'(?P<title>(?:[^']|(?:\\'))*)'(?:,\d+){3}";
-
+	// const PATTERN: &'static str = r"(?P<id>\d+),'(?P<title>(?:[^']|(?:\\'))*)'(?:,\d+){3}";
+	const PATTERN: &'static str = r"(?P<id>\d+),14,'(?P<title>(?:[^']|(?:\\'))*)','(?:[^']|(?:\\'))*'(?:,\d+){2},\d+.\d+(?:,(?:(?:NULL)|(?:'(?:[^']|(?:\\'))*'))){2},\d+,\d+(?:,(?:(?:NULL)|(?:'(?:[^']|(?:\\'))*'))){2}";
 	fn from(cap: Captures) -> Self {
 		return Category {
 			id: cap["id"].parse::<u32>().unwrap(),

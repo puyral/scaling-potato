@@ -47,6 +47,8 @@ pub fn run(categoriesf: File, catcatsf: File) {
 		cells.map(|c| c.to_tuple_calculate()).par_bridge(),
 		vec.dim());
 
+	println!("vec->{}, matrix->{:?}", vec.nnz(), matrix.nnz());
+
 	let res = page_rank(&matrix, &vec, 0.2, 0.1);
 
 	let tmp = collect(matrix, res);
