@@ -115,6 +115,37 @@
         changeThings(usersName,language,nbQueries);
     }
 
+
+
+    function createRow(PagesEdit,DaysEdit,DeltaEdit,CategoriesEdit){
+
+          document.getElementById("tab").innerHTML += "<div class='row'> <div class='col bg-info' >"+PagesEdit+"</div> <div class='col bg-info' >"+DaysEdit+"  </div> <div class='col bg-info' > "+DeltaEdit+" </div> <div class='col bg-info' > "+CategoriesEdit+" </div></div>";
+
+    }
+
+
+    function createRows(b,usersC,L){
+        a = 0;
+        for (var u in usersC){
+
+            if (Math.floor(a/20) ==b){
+
+                console.log(usersC[u].title)
+                PagesEdit = usersC[u].title;
+                DaysEdit = usersC[u].timestamp ;
+                DeltaEdit = usersC[u].sizediff;
+                CategoriesEdit = L[usersC[u].title];
+
+               createRow(PagesEdit,DaysEdit,DeltaEdit,CategoriesEdit);
+            }
+            a+=1;
+        }
+    }
+
+
+                       
+
+
     function changeThings(usersName,language,nbQueries){ /*To update with the value that we get from the input*/
 
         /* We construct the first url , to get the info about the user*/
@@ -199,19 +230,82 @@
 
 
 
-                var L = "";
-                for (var u in usercontribs){
-                    
-                    L+="|"+usercontribs[u].title;
+                var L1 = "";
+                var L2 ="";
+                var L3 ="";
+                var L4 ="";
+                var L5 ="";
+                var L6 ="";
+                var L7 ="";
+                var L8 ="";
+                var L9 ="";
+                var L10 ="";
+
+                var i1 = 0;
+                var i2 = 0;
+                var i3 = 0;
+                var i4 = 0;
+                var i5 = 0;
+                var i6 = 0;
+                var i7 = 0;
+                var i8 = 0;
+                var i9 = 0;
+                var i10 = 0;
+
+
+                var a = 0;
+                for (var u in usersC){
+                    switch(Math.floor(a/20)) {
+                        case 0 :
+                            console.log(usercontribs[u].title)
+                            L1+="|"+usercontribs[u].title;
+                            i1 += 1;                            
+                        case 1 :
+                            
+                            L2+="|"+usercontribs[u].title;
+                            i2 += 1;
+                        case 2 :
+
+                            L3+="|"+usercontribs[u].title;
+                            i3 += 1;
+                        case 3 :
+
+                            L4+="|"+usercontribs[u].title;
+                            i4 += 1;
+                        case 4 :
+
+                            L5+="|"+usercontribs[u].title;
+                            i5 += 1;
+                        case 5 :
+
+                            L6+="|"+usercontribs[u].title;
+                            i6 += 1;
+                        case 6 :
+
+                            L7+="|"+usercontribs[u].title;
+                            i7 += 1;
+                        case 7 :
+
+                            L8+="|"+usercontribs[u].title;
+                            i8 += 1;
+                        case 8 :
+
+                            L9+="|"+usercontribs[u].title;
+                            i9 += 1;
+                        case 9 :
+
+                            L10+="|"+usercontribs[u].title;
+                            i10 += 1;
+                    }
+                    a+=1;
                 }
                 
-                L = L.substring(1,L.length);
-                console.log(L);
+                L1 = L1.substring(1,L1.length);
+                console.log(L1);
 
 
 
 
-                    
 
                 /* For each pages that the user has edited, we research for the category*/
                 var url = "https://"+language+".wikipedia.org/w/api.php"; 
@@ -221,15 +315,18 @@
                     prop: "categories",
                     clshow: "!hidden",
                     cllimit:500,
-                    titles: L
+                    titles: L1
                 };
 
                 url = url + "?origin=*";
                 Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
                 let categ = ""; /*Variable that will contains all the categories of these page*/
+                var L = {};
                 let usercontribsu = usercontribs[u];
+                document.getElementById("tab").innerHTML = "<div class='row'> <div class='col bg-info' > Page </div> <div class='col bg-info' > Jour de l'édit </div> <div class='col bg-info' > DeltaSize </div> <div class='col bg-info' > Categories </div></div>";
+
                 console.log(url);
-                fetch(url)   /*from here it start to bug I don't know why. Maybe there is some latency in the response to the different queries, maybe I shuold wait for the timing to get the response ? */
+                fetch(url)   
                     .then(function(response){return response.json();})
                     .then(function(response) {
                         var pages = response.query.pages;
@@ -240,72 +337,119 @@
 
                         for (var p in pages) {
                             let categ = "";
-
-
                             try {
-
                                 for (var cat of pages[p].categories) {
                                 categ += cat.title+"  ;  " ; /* We add the categories*/
                                 }
-
                                 L[pages[p].title]=categ;
-
-
                             } catch(TypeError) {
-
                                 categ = "";
-
                             }
-
-
-                            
-
-                           
-
-                        }
-                        
+                        }                        
                         /*We add all the différent informations about the edit in x*/
-
-
-
                         console.log(L);
+                        
+                        var b = 0;
 
-
-                        document.getElementById("tab").innerHTML = "<div class='row'> <div class='col bg-info' > Page </div> <div class='col bg-info' > Jour de l'édit </div> <div class='col bg-info' > DeltaSize </div> <div class='col bg-info' > Categories </div></div>";
-
-           
                         for (var u in usersC){
 
+                            if (Math.floor(b/20) ==0){
 
-                            PagesEdit = usercontribs[u].title;
-                            DaysEdit = usercontribs[u].timestamp ;
-                            DeltaEdit = usercontribs[u].sizediff;
-                            CategoriesEdit = L[usercontribs[u].title];
+                                console.log(usercontribs[u].title)
+                                PagesEdit = usercontribs[u].title;
+                                DaysEdit = usercontribs[u].timestamp ;
+                                DeltaEdit = usercontribs[u].sizediff;
+                                CategoriesEdit = L[usercontribs[u].title];
 
-                            /*
-                             x += "<strong>  " + usercontribs[u].user + "</strong> on the <strong>"  + usercontribs[u].timestamp  + "</strong> edit the following page : <strong>" + usercontribs[u].title + "</strong>." + "The delta size is  <strong>" + usercontribs[u].sizediff + "</strong> between the last version and these one." + "The tag is then : " + usercontribs[u].tags + "." + "The page is in various categories such as : <strong>" + L[usercontribs[u].title] + "</strong>" ;
+                                document.getElementById("tab").innerHTML += "<div class='row'> <div class='col bg-info' >"+PagesEdit+"</div> <div class='col bg-info' >"+DaysEdit+"  </div> <div class='col bg-info' > "+DeltaEdit+" </div> <div class='col bg-info' > "+CategoriesEdit+" </div></div>";
+                            }
+                            b+=1;
+                        }
 
-                            x += "<br />";*/
-                            
-                
-                        /**/
-                    
 
-                        document.getElementById("tab").innerHTML += "<div class='row'> <div class='col bg-info' >"+PagesEdit+"</div> <div class='col bg-info' >"+DaysEdit+"  </div> <div class='col bg-info' > "+DeltaEdit+" </div> <div class='col bg-info' > "+CategoriesEdit+" </div></div>";
+                        var f = 15000000000
+                        return f;
+                    })               
 
-                        
-                                }
-                            /*
-                        document.getElementById("infoE").innerHTML = "" +x;
-                                         */
+                    .then(function(response) {
+                        console.log("auidentlnlditelidetulid,li,75757777777777777777777777777777777777")
+                        console.log(response)
+                        if (i2 >0){
+                            L2 = L2.substring(1,L2.length);
+                            console.log(L2);
 
-                    })
 
-/*Chaos is ladder*/
-          
-                    
-                
 
+
+
+                        /* For each pages that the user has edited, we research for the category*/
+                        var url = "https://"+language+".wikipedia.org/w/api.php"; 
+                        var params = {
+                            action: "query",
+                            format: "json",
+                            prop: "categories",
+                            clshow: "!hidden",
+                            cllimit:500,
+                            titles: L2
+                        };
+
+                        url = url + "?origin=*";
+                        Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];});
+                        let categ = ""; /*Variable that will contains all the categories of these page*/
+                        var L = {};
+                        let usercontribsu = usercontribs[u];
+                        console.log(url);
+                        fetch(url)   
+                            .then(function(response){return response.json();})
+                            .then(function(response) {
+                                var pages = response.query.pages;
+                               
+
+                                var L = {};
+
+
+                                for (var p in pages) {
+                                    let categ = "";
+                                    try {
+                                        for (var cat of pages[p].categories) {
+                                        categ += cat.title+"  ;  " ; /* We add the categories*/
+                                        }
+                                        L[pages[p].title]=categ;
+                                    } catch(TypeError) {
+
+                                        categ = "";
+
+                                    }
+                                }                        
+                                /*We add all the différent informations about the edit in x*/
+                                console.log(L);
+                                
+
+                                var b = 1;
+
+
+                                createRows(b,usersC,L);
+                                /*for (var u in usersC){
+
+                                    if (Math.floor(b/20) ==1){
+
+                                        console.log(usercontrib[u].title)
+                                        PagesEdit = usercontribs[u].title;
+                                        DaysEdit = usercontribs[u].timestamp ;
+                                        DeltaEdit = usercontribs[u].sizediff;
+                                        CategoriesEdit = L[usercontribs[u].title];
+
+                                        document.getElementById("tab").innerHTML += "<div class='row'> <div class='col bg-info' >"+PagesEdit+"</div> <div class='col bg-info' >"+DaysEdit+"  </div> <div class='col bg-info' > "+DeltaEdit+" </div> <div class='col bg-info' > "+CategoriesEdit+" </div></div>";
+                                       
+                                    }
+                                    b+=1;
+                                    
+
+                                }*/
+                            })               
+
+                        }
+                        })      
 
     })
 
