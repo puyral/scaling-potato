@@ -5,8 +5,6 @@ use crate::sql_extracts::categories::category::AbstractCategory;
 use crate::sql_extracts::categories::category::category_hash::CategoryHash;
 use crate::sql_extracts::extractor::SqlExtractable;
 
-mod category_links_hash;
-
 /// Because Wikipedia decided to have a structure id -> name (*yay....*) we must use this
 	/// temporary type to extract the sql
 #[derive(Debug)]

@@ -56,17 +56,6 @@ pub fn run(categoriesf: File, catcatsf: File) {
 			.map(|c| c.to_tuple_calculate()),
 		vec.dim());
 
-	/*let m2 = matrix.to_owned();
-	m2.outer_iterator().enumerate().filter_map(|(row_ind, row_vec)| {
-		if row_vec.nnz() == 0 {
-			None
-		} else {
-			Some((row_ind, row_vec.l1_norm()))
-		}
-	}).for_each(|(row_ind, row_vec)| {
-			println!("row n#{} => sum = {}", row_ind, row_vec)
-	});*/
-
 	let res = algebra::page_rank::page_rank(&matrix, &vec, 0.0, 1e-20);
 
 	let mut tmp: Vec<_> = algebra::lib::collect(matrix, res).iter().map(|c| {
