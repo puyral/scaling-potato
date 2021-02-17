@@ -48,15 +48,21 @@
                  <legend>Research now the pseudo of a wikipedia users to get all his profile.</legend>
                  
                  <div class="form-group">
-                   <label for="nom">Users Name : </label>
+                   <label >Users Name : </label>
                    <input type="text" class="form-control" id="usersName" placeholder="A3nm">
                  </div>
                  
                  <div class="form-group">
-                   <label for="email">Language?</label>
+                   <label >Language?</label>
                    <input type="text" class="form-control" id="language" placeholder="fr">
                  </div>
                  
+
+                <div class="form-group">
+                   <label >Number of queries?</label>
+                   <input type="text" class="form-control" id="nbQueries" placeholder="50">
+                 </div>
+
                </fieldset>
              </form>
 
@@ -104,11 +110,12 @@
 
         var usersName = document.getElementById("usersName").value;
         var language = document.getElementById("language").value;
+        var nbQueries = document.getElementById("nbQueries").value;
 
-        changeThings(usersName,language);
+        changeThings(usersName,language,nbQueries);
     }
 
-    function changeThings(usersName,language){ /*To update with the value that we get from the input*/
+    function changeThings(usersName,language,nbQueries){ /*To update with the value that we get from the input*/
 
         /* We construct the first url , to get the info about the user*/
         var url = "https://"+ language+ ".wikipedia.org/w/api.php"; 
@@ -160,7 +167,7 @@
             ucprop: "ids|title|comment|size|sizediff|timestamp|tags",
             format: "json",
             ucshow:"!minor",
-            uclimit:"5",
+            uclimit:nbQueries,
             ucnamespace:"0"
         };
 
