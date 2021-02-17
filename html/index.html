@@ -39,46 +39,90 @@
 
         <h1>Get all the users info</h1>
 
+            <div class='row'> 
+                <div class='col bg-info' >
+                
+
+                       <form>
+                       <fieldset>
+                         <legend>Research now the pseudo of a wikipedia users to get all his profile.</legend>
+                         
+                         <div class="form-group">
+                           <label >Users Name : </label>
+                           <input type="text" class="form-control" id="usersName" placeholder="A3nm">
+                         </div>
+                         
+                         <div class="form-group">
+                           <label >Language?</label>
+                           <input type="text" class="form-control" id="language" placeholder="fr">
+                         </div>
+                         
+
+                        <div class="form-group">
+                           <label >Number of queries?</label>
+                           <input type="text" class="form-control" id="nbQueries" placeholder="50">
+                         </div>
+
+                       </fieldset>
+                     </form>
+
+
+
+                </div>
+                <div class='col bg-info' > 
+
+                     <!-- General info about the users -->
+
+
+                    <div class='row'> 
+                        <div class='col bg-info' >
+                            <p id="name"> <strong> Nom de l'utilisateur : </strong> </p>
+                        </div>
+
+                        <div class='col bg-info' >
+                            <p id="groups">
+                    <strong>Groupe de l'utilisateur : </strong> </p>
+                        </div>
+
+                    </div>
+                    <div class='row'> 
+                        <div class='col bg-info' >
+                            <p id="editcount">
+                    <strong>Nombre d'édits de l'utilisateur : </strong> </p>
+                        </div>
+
+                        <div class='col bg-info' >
+                            <p id="registration"><strong> Date d'enregistrement sur wikipedia : </strong> </p>
+                        </div>
+                    </div>
+                    <div class='row'> 
+                        <div class='col bg-info' >
+                             <p id="emailable"> <strong>Email, si renseigné : </strong> </p>
+                        </div>
+
+
+                        <div class='col bg-info' >
+                            
+                    <p id="latestcontrib"> <strong>Dernière modification le : </strong> </p>
+
+                        </div>
+
+                    </div>
+
+                    
+                   
+
+                    <!--<p id="gender"></p> -->
+                </div> 
+            </div>
+
             
-
-            <!-- Button for selecting users -->
-
-            <form>
-               <fieldset>
-                 <legend>Research now the pseudo of a wikipedia users to get all his profile.</legend>
-                 
-                 <div class="form-group">
-                   <label >Users Name : </label>
-                   <input type="text" class="form-control" id="usersName" placeholder="A3nm">
-                 </div>
-                 
-                 <div class="form-group">
-                   <label >Language?</label>
-                   <input type="text" class="form-control" id="language" placeholder="fr">
-                 </div>
-                 
-
-                <div class="form-group">
-                   <label >Number of queries?</label>
-                   <input type="text" class="form-control" id="nbQueries" placeholder="50">
-                 </div>
-
-               </fieldset>
-             </form>
+            <div class='row'> 
+                <button type="button" class ="btn btn-success mb-2" onclick="getValue();">Go !</button>
+            </div>
 
 
-            <button type="button" class ="btn btn-success mb-2" onclick="getValue();">Go !</button>
-            
-
-            <!-- General info about the users -->
-            <p id="name"></p>
-            <p id="blockinfo"></p>
-            <p id="groups"></p>
-            <p id="editcount"></p>
-            <p id="registration"></p>
-            <p id="emailable"></p>
-            <p id="gender"></p>
-
+           
             <!-- All the queries he did  -->
 
             <!--<p id="infoE"></p> -->
@@ -117,14 +161,26 @@
 
 
 
-    function createRow(PagesEdit,DaysEdit,DeltaEdit,CategoriesEdit){
+    function createRow(PagesEdit,DaysEdit,DeltaEdit,CategoriesEdit,language){  /* Creates the row off the tab */
 
-          document.getElementById("tab").innerHTML += "<div class='row'> <div class='col bg-info' >"+PagesEdit+"</div> <div class='col bg-info' >"+DaysEdit+"  </div> <div class='col bg-info' > "+DeltaEdit+" </div> <div class='col bg-info' > "+CategoriesEdit+" </div></div>";
+
+        var URLpage = createURLpage(PagesEdit,language);
+        
+
+        document.getElementById("tab").innerHTML += "<div class='row'> <div class='col bg-info' >"+URLpage+"</div> <div class='col bg-info' >"+DaysEdit+"  </div> <div class='col bg-info' > "+DeltaEdit+" </div> <div class='col bg-info' > "+CategoriesEdit+" </div></div>";
 
     }
 
 
-    function createRows(b,usersC,L){
+    function createURLpage(name,language){   /*  Creer le lien pour la page wikipedia qu'on souhaite */
+        name2 = name.split(' ').join('_');
+        var url = "https://"+language+".wikipedia.org/wiki/"+name2;
+        var complet = "<a href="+url+">"+name+"</a>";
+        return complet;
+    }
+
+
+    function createRows(b,usersC,L,language){/* Go through all the queries the users made (usersC), and display in a tab the differentes queries with relevant information  */ 
         a = 0;
         for (var u in usersC){
 
@@ -135,14 +191,11 @@
                 DeltaEdit = usersC[u].sizediff;
                 CategoriesEdit = L[usersC[u].title];
 
-               createRow(PagesEdit,DaysEdit,DeltaEdit,CategoriesEdit);
+               createRow(PagesEdit,DaysEdit,DeltaEdit,CategoriesEdit,language);
             }
             a+=1;
         }
     }
-
-
-                       
 
 
     function changeThings(usersName,language,nbQueries){ /*To update with the value that we get from the input*/
@@ -173,22 +226,26 @@
                 var xemailable = users[0].emailable;
                 var xgender = users[0].gender;
                 /*Show the different value*/
-                document.getElementById("name").innerHTML =
-                    " <strong> Nom de l'utilisateur : </strong> " +xname;
-                document.getElementById("blockinfo").innerHTML =
-                    " " +xblockinfo;
-                document.getElementById("groups").innerHTML =
-                    "<strong>Groupe de l'utilisateur : </strong> " +xgroups;
-                document.getElementById("editcount").innerHTML =
-                    "<strong>Nombre d'édits de l'utilisateur : </strong> " +xeditcount;
-                document.getElementById("registration").innerHTML =
-                    "<strong> Date d'enregistrement sur wikipedia : </strong> " +xregistration;
-                document.getElementById("emailable").innerHTML =
-                    " <strong>Email, si renseigné : </strong> " +xemailable;
+                document.getElementById("name").innerHTML =+xname;
+                /*document.getElementById("blockinfo").innerHTML =+xblockinfo;*/
+                document.getElementById("groups").innerHTML =+xgroups;
+                document.getElementById("editcount").innerHTML =+xeditcount;
+                document.getElementById("registration").innerHTML =+xregistration;
+                document.getElementById("emailable").innerHTML =+xemailable;
 
             })
 
+
+        /*Get the number of view for each page*/
+
+
+        
+
+
+
+
         /*Second request to get the different queries of that user*/
+
         var url = "https://"+ language+ ".wikipedia.org/w/api.php"; 
         var params = {
             action: "query",
@@ -209,24 +266,24 @@
             .then(function(response){return response.json();})
             .then(function(response) {
                 var usercontribs = response.query.usercontribs; 
-                /*var x = ""; /* The following variable will contain all the important info about the queries of the users and then will be print in the different columns */
-
-                var PagesEdits = "";
-                var DaysEdits = "";
-                var DeltaEdits = "";
-                var CategoriesEdits = "";
+                
 
 
 
                 document.getElementById("tab").innerHTML = "<div class='row'> <div class='col bg-info' > Page </div> <div class='col bg-info' > Jour de l'édit </div> <div class='col bg-info' > DeltaSize </div> <div class='col bg-info' > Categories </div></div>";
 
-                usersC = usercontribs.sort(function(a,b){   /*We sort the contribution by the absolute value of delta size */
+                usersC = usercontribs.sort(function(a,b){   /*We sort the contribution by the absolute value of delta size. */
                     if (Math.abs(a.sizediff) < Math.abs(b.sizediff) ){ return 1; } 
                     if (Math.abs(a.sizediff) > Math.abs(b.sizediff) ){ return -1;}
                     return 0; 
                 })
 
-                var L1 = "";
+
+                /*With that sorted we have a first approximation of the different importance of queries */
+
+                /*We are now going to construct 10 different url in order to do 10 diferent fetch. We have to do this because of certain 
+                wikipedia restrictions*/
+                var L1 = "";  
                 var L2 ="";
                 var L3 ="";
                 var L4 ="";
@@ -244,8 +301,6 @@
 
                     Dicti[i+1] = 0;
                 }
-
-
 
                 var a = 0;
                 for (var u in usersC){
@@ -304,12 +359,10 @@
                     a+=1;
                 }
                 
-
                 for (i = 0;i<10;i++){
 
                     console.log(Dicti[i+1]);
                 }
-
 
                 console.log(usersC);
                 L1 = L1.substring(1,L1.length);
@@ -323,7 +376,7 @@
                 L9 = L9.substring(1,L9.length);
                 L10 = L10.substring(1,L10.length);
 
-                /* For each pages that the user has edited, we research for the category*/
+                /* Here comes the url*/
                 var url1 = "https://"+language+".wikipedia.org/w/api.php";
                 var url2 = "https://"+language+".wikipedia.org/w/api.php"; 
                 var url3 = "https://"+language+".wikipedia.org/w/api.php"; 
@@ -340,10 +393,11 @@
                 var params = {
                     action: "query",
                     format: "json",
-                    prop: "categories",
+                    prop: "categories|pageviews|links|linkshere",
                     clshow: "!hidden",
                     cllimit:500,
-                    titles: ""
+                    titles: "",
+                    pllimit : 50
                 };
 
                 for (i = 0; i<11;i++){
@@ -354,154 +408,115 @@
                             url1 = url1 + "?origin=*";
                             Object.keys(params).forEach(function(key){url1 += "&" + key + "=" + params[key];});
                             dictURL[1] = url1;
-                            break;
+                            break;                             
 
                         case 1:
                             params["titles"] = L2
                             url2 = url2 + "?origin=*";
                             Object.keys(params).forEach(function(key){url2 += "&" + key + "=" + params[key];});
                             dictURL[2] = url2;
-                            break;
+                            break; 
 
                         case 2:
                             params["titles"] = L3
                             url3 = url3 + "?origin=*";
                             Object.keys(params).forEach(function(key){url3 += "&" + key + "=" + params[key];});
                             dictURL[3] = url3;
-                            break;
+                            break; 
 
                         case 3:
                             params["titles"] = L4
                             url4 = url4 + "?origin=*";
                             Object.keys(params).forEach(function(key){url4 += "&" + key + "=" + params[key];});
                             dictURL[4] = url4;
-                            break;
+                            break; 
 
                         case 4:
                             params["titles"] = L5
                             url5 = url5 + "?origin=*";
                             Object.keys(params).forEach(function(key){url5 += "&" + key + "=" + params[key];});
                             dictURL[5] = url5;
-                            break;
+                            break; 
+
 
                         case 5:
                             params["titles"] = L6
                             url6 = url6 + "?origin=*";
                             Object.keys(params).forEach(function(key){url6 += "&" + key + "=" + params[key];});
                             dictURL[6] = url6;
-                            break;
-
+                            break; 
 
                         case 6:
                             params["titles"] = L7
                             url7 = url7 + "?origin=*";
                             Object.keys(params).forEach(function(key){url7 += "&" + key + "=" + params[key];});
                             dictURL[7] = url7;
-                            break;
-
+                            break; 
 
                         case 7:
                             params["titles"] = L8
                             url8 = url8 + "?origin=*";
                             Object.keys(params).forEach(function(key){url8 += "&" + key + "=" + params[key];});
                             dictURL[8] = url8;
-                            break;
-
+                            break; 
 
                         case 8:
                             params["titles"] = L9
                             url9 = url9 + "?origin=*";
                             Object.keys(params).forEach(function(key){url9 += "&" + key + "=" + params[key];});
                             dictURL[9] = url9;
-                            break;
-
+                            break; 
 
                         case 9:
                             params["titles"] = L10
                             url10 = url10 + "?origin=*";
                             Object.keys(params).forEach(function(key){url10 += "&" + key + "=" + params[key];});
                             dictURL[10] = url10;
-                            break;
+                            break; 
+
 
                     }
                 }
 
 
-                let categ = ""; /*Variable that will contains all the categories of these page*/
+                console.log(dictURL[1]);
+                let categ = ""; 
                 var L = {};
+            
+                Promise.all( [
+                    
 
 
-                var lResp = new Object;
 
+                        /*We do all the fetch in a promise all to gather them in one, and then we can go through all the data.*/
+                        fetch(dictURL[1]).then(resp => resp.json()),
+                        fetch(dictURL[2]).then(resp => resp.json()),
+                        fetch(dictURL[3]).then(resp => resp.json()),
+                        fetch(dictURL[4]).then(resp => resp.json()),
+                        fetch(dictURL[5]).then(resp => resp.json()),
+                        fetch(dictURL[6]).then(resp => resp.json()),
+                        fetch(dictURL[7]).then(resp => resp.json()),
+                        fetch(dictURL[8]).then(resp => resp.json()),
+                        fetch(dictURL[9]).then(resp => resp.json()),
+                        fetch(dictURL[10]).then(resp => resp.json())
+                    
+                    ]).then(function(response){
 
-                for (i = 0; i<10; i ++){
-
-                    lResp[i+1] = i;
-                }
-
-
-                for (i = 0 ; i <10 ; i ++){
-
-                    console.log(dictURL[i]);
-                }
-
-
-                (async () => {
-                    try {
-                        
-                        let resp = await fetch(dictURL[1]);
-                        lResp[1] = await resp.json();
-
-                        resp = await fetch(dictURL[2]);
-                        lResp[2] = await resp.json()
-                        
-
-                        resp = await fetch(dictURL[3]);
-                        lResp[3] = await resp.json();
-
-                        resp = await fetch(dictURL[4]);
-                        lResp[4] = await resp.json();
-
-                        resp = await fetch(dictURL[5]);
-                        lResp[5] = await resp.json();
-
-                        resp = await fetch(dictURL[6]);
-                        lResp[6] = await resp.json();
-
-                        resp = await fetch(dictURL[7]);
-                        lResp[7] = await resp.json();
-
-                        resp = await fetch(dictURL[8]);
-                        lResp[8] = await resp.json();
-
-                        resp = await fetch(dictURL[9]);
-                        lResp[9] = await resp.json();
-
-                        resp = await fetch(dictURL[10]);
-                        lResp[10] = await resp.json();;
-
-                        
-                        
-
-                        
-
-                        for (var u in lResp){
-
-                            console.log(lResp[u]);
-                        }
-                        
-                
-
-
+                        console.log(response);
                         var L = {};
+                        var pageViews = [];
 
-                        for (i= 0;i<10; i++){
+                        var links = [];
+                        var linkshere = []; 
 
-                            if (Dicti[i+1] >0) {
 
-                                var pages = lResp[i+1].query.pages;
+                        for (i= 0;i<10; i++){  /* For each fetchs… there is 10 fetchs*/ 
+
+                            if (Dicti[i+1] >0) { /* Do this only if this fetch if interesting*/
+
+                                var pages = response[i].query.pages;
                                 for (var p in pages) {
-                                    let categ = "";
+                                    let categ = "";  /*Variable that will contains all the categories of these page*/
                                     try {
                                         for (var cat of pages[p].categories) {
                                         categ += cat.title+"  ;  " ; /* We add the categories*/
@@ -510,108 +525,52 @@
                                     } catch(TypeError) {
                                         categ = "";
                                     }
+                                    key = Object.keys(pages[p].pageviews);
+                                    try {
+                                        
+                                        
+                                        console.log("aludi,t,c2222777777777777777777777777777777777777777");
+                                        console.log(pages[p].title);
+                                        pageViews.push([pages[p].title,pages[p].pageviews[key[0]]]);
+
+                                        links.push([pages[p].title,pages[p].links]);
+                                        linkshere.push([pages[p].title,pages[p].linkshere]);
+
+                                    }
+
+                                    catch(TypeError){
+                                        console.log("Bon je supose que je suis ici  du coup …");
+                                        var huitre = 0;
+                                    }
+                                    
+                                    
                                 }     
                             }
                             
                         }
-                        console.log(L);
-                        console.log("ALORS ? ");
+                        console.log(pageViews);
+
+                        var sortedpageViews = pageViews.sort(function(a,b){   /*We sort the contribution by the absolute value of delta size. */
+                            if (a[1] < b[1] ){ return 1; } 
+                            if (b[1] < a[1] ) { return -1;}
+                            return 0; 
+                        })
+                        console.log(sortedpageViews);
+
+
+
+                        console.log(links);
+                        console.log(linkshere);
+                        console.log(language);
                         for (b = 0;b<10;b++){
 
-                            console.log(Dicti[b+1]);
                             if (Dicti[b+1] >0) {
-                                createRows(b,usersC,L);
-
-                                            }
-                                      }
-                   
-                    
-
-                    } catch (err) {
-                        console.log("Coucouc merde");
-                        console.log(err)
-                    }
-                  }
-                )()
-
-
-               
-
-                  /*      
-
-                console.log(dictURL[1]);
-                fetch(dictURL[1])   
-                    .then(function(response){return response.json();})
-                    .then(function(response) {
-                        var pages = response.query.pages;
-                       
-
-                        var L = {};
-
-
-                        for (var p in pages) {
-                            let categ = "";
-                            try {
-                                for (var cat of pages[p].categories) {
-                                categ += cat.title+"  ;  " ; /* We add the categories
-                                }
-                                L[pages[p].title]=categ;
-                            } catch(TypeError) {
-                                categ = "";
+                                createRows(b,usersC,L,language);
                             }
-                        }          
+                        }
+                    })
 
-                        return L;
-                    })               
-
-                    .then(function(response) {
-
-                        L = response;
-                        let categ = "";
-
-                        if (i2 >0){
-                            
-                            fetch(dictURL[2])   
-                                .then(function(response){return response.json();})
-                                .then(function(response) {
-                                    var pages = response.query.pages;
-                                    var L = {};
-                                    for (var p in pages) {
-                                        let categ = "";
-                                        try {
-                                            for (var cat of pages[p].categories) {
-                                            categ += cat.title+"  ;  " ; /* We add the categories
-                                            }
-                                            L[pages[p].title]=categ;
-                                        } catch(TypeError) {
-
-                                            categ = "";
-                                        }
-                                    }                        
-
-                                    return L;
-
-                                })
-                                .then(function(response){
-
-                                    L = response;
-                                    b = 0;
-                                    createRows(b,usersC,L);
-                                    b = 1 ;
-                                    createRows(b,usersC,L);
-
-
-
-                                }
-
-
-                                    )
-
-                            }
-
-                        })      
-            
-            */
+                  
     })
 
     }
