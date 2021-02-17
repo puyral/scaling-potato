@@ -117,20 +117,19 @@
 
 
 
-    function createRow(PagesEdit,DaysEdit,DeltaEdit,CategoriesEdit){    /* Creates the row off the tab */
+    function createRow(PagesEdit,DaysEdit,DeltaEdit,CategoriesEdit){
 
           document.getElementById("tab").innerHTML += "<div class='row'> <div class='col bg-info' >"+PagesEdit+"</div> <div class='col bg-info' >"+DaysEdit+"  </div> <div class='col bg-info' > "+DeltaEdit+" </div> <div class='col bg-info' > "+CategoriesEdit+" </div></div>";
 
     }
 
 
-    function createRows(b,usersC,L){  /* Go through all the queries the users made (usersC), and display in a tab the differentes queries with relevant information  */ 
+    function createRows(b,usersC,L){
         a = 0;
         for (var u in usersC){
 
-            if (Math.floor(a/20) ==b){
+            if (Math.floor(a/50) ==b){
 
-                console.log(usersC[u].title)
                 PagesEdit = usersC[u].title;
                 DaysEdit = usersC[u].timestamp ;
                 DeltaEdit = usersC[u].sizediff;
@@ -238,67 +237,91 @@
                 var L9 ="";
                 var L10 ="";
 
-                var i1 = 0;
-                var i2 = 0;
-                var i3 = 0;
-                var i4 = 0;
-                var i5 = 0;
-                var i6 = 0;
-                var i7 = 0;
-                var i8 = 0;
-                var i9 = 0;
-                var i10 = 0;
+                
+                var Dicti = {}
+
+                for (i = 0; i <10 ; i ++) {
+
+                    Dicti[i+1] = 0;
+                }
+
 
 
                 var a = 0;
                 for (var u in usersC){
-                    switch(Math.floor(a/20)) {
+
+                    switch(Math.floor(a/50)) {
                         case 0 :
-                            console.log(usercontribs[u].title)
                             L1+="|"+usercontribs[u].title;
-                            i1 += 1;                            
+                            Dicti[1] += 1;
+                            break;               
                         case 1 :
-                            
+
                             L2+="|"+usercontribs[u].title;
-                            i2 += 1;
+                            Dicti[2] += 1;
+                            break;
                         case 2 :
 
                             L3+="|"+usercontribs[u].title;
-                            i3 += 1;
+                            Dicti[3] += 1;
+                            break;
                         case 3 :
 
                             L4+="|"+usercontribs[u].title;
-                            i4 += 1;
+                            Dicti[4] += 1;
+                            break;
                         case 4 :
 
                             L5+="|"+usercontribs[u].title;
-                            i5 += 1;
+                            Dicti[5] += 1;
+                            break;
                         case 5 :
 
                             L6+="|"+usercontribs[u].title;
-                            i6 += 1;
+                            Dicti[6] += 1;
+                            break;
                         case 6 :
 
                             L7+="|"+usercontribs[u].title;
-                            i7 += 1;
+                            Dicti[7] += 1;
+                            break;
                         case 7 :
 
                             L8+="|"+usercontribs[u].title;
-                            i8 += 1;
+                            Dicti[8] += 1;
+                            break;
                         case 8 :
 
                             L9+="|"+usercontribs[u].title;
-                            i9 += 1;
+                            Dicti[9] += 1;
+                            break;
                         case 9 :
 
                             L10+="|"+usercontribs[u].title;
-                            i10 += 1;
+                            Dicti[10] += 1;
+                            break;
                     }
                     a+=1;
                 }
                 
+
+                for (i = 0;i<10;i++){
+
+                    console.log(Dicti[i+1]);
+                }
+
+
+                console.log(usersC);
                 L1 = L1.substring(1,L1.length);
-                console.log(L1);
+                L2 = L2.substring(1,L2.length);
+                L3 = L3.substring(1,L3.length);
+                L4 = L4.substring(1,L4.length);
+                L5 = L5.substring(1,L5.length);
+                L6 = L6.substring(1,L6.length);
+                L7 = L7.substring(1,L7.length);
+                L8 = L8.substring(1,L8.length);
+                L9 = L9.substring(1,L9.length);
+                L10 = L10.substring(1,L10.length);
 
                 /* For each pages that the user has edited, we research for the category*/
                 var url1 = "https://"+language+".wikipedia.org/w/api.php";
@@ -311,9 +334,6 @@
                 var url8 = "https://"+language+".wikipedia.org/w/api.php"; 
                 var url9 = "https://"+language+".wikipedia.org/w/api.php"; 
                 var url10 = "https://"+language+".wikipedia.org/w/api.php"; 
-
-
-
 
 
                 var dictURL = {};
@@ -334,84 +354,190 @@
                             url1 = url1 + "?origin=*";
                             Object.keys(params).forEach(function(key){url1 += "&" + key + "=" + params[key];});
                             dictURL[1] = url1;
-
+                            break;
 
                         case 1:
                             params["titles"] = L2
                             url2 = url2 + "?origin=*";
                             Object.keys(params).forEach(function(key){url2 += "&" + key + "=" + params[key];});
                             dictURL[2] = url2;
+                            break;
 
                         case 2:
                             params["titles"] = L3
                             url3 = url3 + "?origin=*";
                             Object.keys(params).forEach(function(key){url3 += "&" + key + "=" + params[key];});
                             dictURL[3] = url3;
+                            break;
 
                         case 3:
                             params["titles"] = L4
                             url4 = url4 + "?origin=*";
                             Object.keys(params).forEach(function(key){url4 += "&" + key + "=" + params[key];});
                             dictURL[4] = url4;
+                            break;
 
                         case 4:
                             params["titles"] = L5
                             url5 = url5 + "?origin=*";
                             Object.keys(params).forEach(function(key){url5 += "&" + key + "=" + params[key];});
                             dictURL[5] = url5;
-
+                            break;
 
                         case 5:
                             params["titles"] = L6
                             url6 = url6 + "?origin=*";
                             Object.keys(params).forEach(function(key){url6 += "&" + key + "=" + params[key];});
                             dictURL[6] = url6;
+                            break;
+
 
                         case 6:
                             params["titles"] = L7
                             url7 = url7 + "?origin=*";
                             Object.keys(params).forEach(function(key){url7 += "&" + key + "=" + params[key];});
                             dictURL[7] = url7;
+                            break;
+
 
                         case 7:
                             params["titles"] = L8
                             url8 = url8 + "?origin=*";
                             Object.keys(params).forEach(function(key){url8 += "&" + key + "=" + params[key];});
                             dictURL[8] = url8;
+                            break;
+
 
                         case 8:
                             params["titles"] = L9
                             url9 = url9 + "?origin=*";
                             Object.keys(params).forEach(function(key){url9 += "&" + key + "=" + params[key];});
                             dictURL[9] = url9;
+                            break;
+
 
                         case 9:
                             params["titles"] = L10
                             url10 = url10 + "?origin=*";
                             Object.keys(params).forEach(function(key){url10 += "&" + key + "=" + params[key];});
                             dictURL[10] = url10;
+                            break;
 
                     }
                 }
 
 
-
-
-
-
-
-
-
                 let categ = ""; /*Variable that will contains all the categories of these page*/
                 var L = {};
-            
 
 
+                var lResp = new Object;
 
 
+                for (i = 0; i<10; i ++){
+
+                    lResp[i+1] = i;
+                }
 
 
+                for (i = 0 ; i <10 ; i ++){
 
+                    console.log(dictURL[i]);
+                }
+
+
+                (async () => {
+                    try {
+                        
+                        let resp = await fetch(dictURL[1]);
+                        lResp[1] = await resp.json();
+
+                        resp = await fetch(dictURL[2]);
+                        lResp[2] = await resp.json()
+                        
+
+                        resp = await fetch(dictURL[3]);
+                        lResp[3] = await resp.json();
+
+                        resp = await fetch(dictURL[4]);
+                        lResp[4] = await resp.json();
+
+                        resp = await fetch(dictURL[5]);
+                        lResp[5] = await resp.json();
+
+                        resp = await fetch(dictURL[6]);
+                        lResp[6] = await resp.json();
+
+                        resp = await fetch(dictURL[7]);
+                        lResp[7] = await resp.json();
+
+                        resp = await fetch(dictURL[8]);
+                        lResp[8] = await resp.json();
+
+                        resp = await fetch(dictURL[9]);
+                        lResp[9] = await resp.json();
+
+                        resp = await fetch(dictURL[10]);
+                        lResp[10] = await resp.json();;
+
+                        
+                        
+
+                        
+
+                        for (var u in lResp){
+
+                            console.log(lResp[u]);
+                        }
+                        
+                
+
+
+                        var L = {};
+
+                        for (i= 0;i<10; i++){
+
+                            if (Dicti[i+1] >0) {
+
+                                var pages = lResp[i+1].query.pages;
+                                for (var p in pages) {
+                                    let categ = "";
+                                    try {
+                                        for (var cat of pages[p].categories) {
+                                        categ += cat.title+"  ;  " ; /* We add the categories*/
+                                        }
+                                        L[pages[p].title]=categ;
+                                    } catch(TypeError) {
+                                        categ = "";
+                                    }
+                                }     
+                            }
+                            
+                        }
+                        console.log(L);
+                        console.log("ALORS ? ");
+                        for (b = 0;b<10;b++){
+
+                            console.log(Dicti[b+1]);
+                            if (Dicti[b+1] >0) {
+                                createRows(b,usersC,L);
+
+                                            }
+                                      }
+                   
+                    
+
+                    } catch (err) {
+                        console.log("Coucouc merde");
+                        console.log(err)
+                    }
+                  }
+                )()
+
+
+               
+
+                  /*      
 
                 console.log(dictURL[1]);
                 fetch(dictURL[1])   
@@ -427,7 +553,7 @@
                             let categ = "";
                             try {
                                 for (var cat of pages[p].categories) {
-                                categ += cat.title+"  ;  " ; /* We add the categories*/
+                                categ += cat.title+"  ;  " ; /* We add the categories
                                 }
                                 L[pages[p].title]=categ;
                             } catch(TypeError) {
@@ -454,7 +580,7 @@
                                         let categ = "";
                                         try {
                                             for (var cat of pages[p].categories) {
-                                            categ += cat.title+"  ;  " ; /* We add the categories*/
+                                            categ += cat.title+"  ;  " ; /* We add the categories
                                             }
                                             L[pages[p].title]=categ;
                                         } catch(TypeError) {
@@ -479,14 +605,13 @@
                                 }
 
 
-
-
                                     )
 
                             }
 
                         })      
-
+            
+            */
     })
 
     }
