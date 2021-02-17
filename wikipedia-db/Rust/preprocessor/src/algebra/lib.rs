@@ -1,13 +1,12 @@
-use std::cmp::Ordering;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 use std::iter::FromIterator;
 
 use ordered_float::OrderedFloat;
 use rayon::iter::Either::*;
 use rayon::prelude::*;
-use sprs::{CsMatI, CsVecI, OuterIterator, TriMatI};
+use sprs::{CsMatI, CsVecI, TriMatI};
 
-use crate::algebra::{NonZeroCoeff, NonZeroCoeffF};
+use crate::algebra::NonZeroCoeff;
 
 // pub fn make_matrix(nzcs: impl Iterator<Item = NonZeroCoeff>, size: usize, dimension: usize) -> CsMatI<f64, u32> {
 // 	let mut col_ind = Vec::with_capacity(size);
@@ -44,8 +43,6 @@ pub fn make_matrix(nzcs: impl ParallelIterator<Item = (u32, u32, f64)>, dimensio
 			_ => panic!("unreachable")
 		}
 	});
-
-	println!("dim={}, col={}, row={}", dimension, col_inds.iter().max().unwrap(), row_inds.iter().max().unwrap());
 	TriMatI::from_triplets(
 		(dimension, dimension),
 		row_inds,
@@ -57,25 +54,27 @@ pub fn make_matrix(nzcs: impl ParallelIterator<Item = (u32, u32, f64)>, dimensio
 pub fn make_vec(nzc: impl ParallelIterator<Item = u32>) -> CsVecI<f64, u32> {
 	let vec = Vec::from_par_iter(nzc);
 	let m = *vec.iter().max().unwrap_or(&0) + 1;
-	println!("m={:}", m);
 
 	let n = vec.len();
 
 	CsVecI::new(m as usize, vec, vec![1.0; n])
 }
 
-pub fn collect(matrix: CsMatI<f64, u32>, vec: CsVecI<f64, u32>) -> Vec<NonZeroCoeffF> {
+pub fn collect(matrix: CsMatI<f64, u32>, vec: CsVecI<f64, u32>) -> Vec<NonZeroCoeff<usize, f64>> {
 	assert!(matrix.is_csr());
 
 	let tmp: HashMap<_, _> = vec.iter().collect();
 	Vec::from_iter(matrix.outer_iterator().enumerate()
 		.filter_map(|(row_ind, row_vec)| {
-			match row_vec.iter().max_by_key(|(i, _)| OrderedFloat(**tmp.get(i).unwrap_or(&&0.0))) {
+			let pr = tmp.get(&row_ind);
+			match pr {
 				None => None,
-				Some((id, _)) => Some(NonZeroCoeffF::new(
+				Some(&&p) => Some(NonZeroCoeff::new(
 					row_ind,
-					id,
-					**tmp.get(&row_ind).unwrap(),
+					row_vec.iter().max_by_key(|(i, _)| {
+						OrderedFloat(**tmp.get(i).unwrap_or(&&0.0))
+					}).unwrap_or((0, &0.0)).0,
+					p,
 				))
 			}
 		}))

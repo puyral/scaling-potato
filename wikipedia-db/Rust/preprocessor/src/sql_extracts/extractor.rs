@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::BufRead;
 use std::iter::FromIterator;
 
-use rayon::prelude::{IntoParallelIterator, ParallelBridge, ParallelIterator};
+use rayon::prelude::*;
 use regex::{Captures, Regex};
 
 /// A tool to

@@ -1,73 +1,48 @@
 //! The sql extraction
 
-
+use rayon::prelude::*;
 
 use crate::algebra::NonZeroCoeff;
-use crate::sql_extracts::categories::Category;
-use crate::sql_extracts::categories::category_category_vec::CategoryCategoryVec;
+use crate::sql_extracts::categories::category::Category;
+use crate::sql_extracts::categories::category::category_hash::CategoryHash;
+use crate::sql_extracts::categories::category_links::CategoryLinks;
 
 pub mod extractor;
 pub mod categories;
 
-pub fn merge_categories_links_triplets<'a>(
-	categories: &'a Vec<Category>,
-	catcats: &'a CategoryCategoryVec, //sorted array
-) -> impl Iterator<Item = NonZeroCoeff> + 'a
-{
-	categories.iter().flat_map(move |cat| {
-		let v = catcats.search(&cat.title);
-		let n = v.len();
+// pub fn merge_categories_links_triplets<'a>(
+// 	categories: &'a CategoryHash<Category>,
+// 	catcats: &'a Vec<CategoryLinks>,
+// ) -> impl Iterator<Item = NonZeroCoeff> + 'a
+// {
+// 	categories.iter().flat_map(move |cat| {
+// 		let v = catcats.search(&cat.get_title());
+// 		let n = v.len() as u32 + 1;
+//
+// 		v.into_iter().map(move |catcat| {
+// 			NonZeroCoeff::new(catcat.from, cat.get_id(), n as u32)
+// 		}).chain(iter::once(NonZeroCoeff::new(cat.get_id(), cat.get_id(), n)))
+// 	})
+// }
 
-		v.into_iter().map(move |catcat| {
-			NonZeroCoeff::new(catcat.from, cat.id, n as u32)
-		})
+pub fn calculate_nzc<'a>(
+	categories: &'a CategoryHash<Category>,
+	category_links: &'a Vec<CategoryLinks>,
+) -> impl ParallelIterator<Item = NonZeroCoeff<u32, f64>> + 'a {
+	category_links.into_par_iter().map(move |c| {
+		NonZeroCoeff::new(c.from, c.to, categories.get_by_index(c.from).unwrap().get_dout() as f64)
 	})
 }
 
-#[cfg(test)]
-mod tests {
-	use std::fs::File;
-	use std::iter::FromIterator;
-
-	use rayon::prelude::FromParallelIterator;
-
-	use crate::algebra::NonZeroCoeff;
-	use crate::sql_extracts::categories::{Category, CategoryCategorySql};
-	use crate::sql_extracts::categories::category_category_vec::CategoryCategoryVec;
-	use crate::sql_extracts::extractor::Extractor;
-	use crate::sql_extracts::merge_categories_links_triplets;
-
-	#[test]
-	fn parallel() -> () {
-		let categories = Vec::from_par_iter(
-			Extractor::extract_par_iter_file::<Category>(
-				File::open("test_samples/nrm/nrmwiki-20210201-page.sql")
-					.expect("Something went wrong reading the file category")));
-		let catcat = CategoryCategoryVec::from_par_iter(
-			Extractor::extract_par_iter_file::<CategoryCategorySql>(
-				File::open("test_samples/nrm/nrmwiki-20210201-categorylinks.sql")
-					.expect("Something went wrong reading the file categorylinks")));
-
-		let v =
-			Vec::from_iter(merge_categories_links_triplets(&categories, &catcat));
-
-		// println!("assert_eq!({},v.len());",v.len());
-		// v[5..13].iter().for_each(|nzc|println!("{},",nzc.serialize()))
-
-		// for i in 5..15 {
-		// 	println!("assert_eq!(v[{}],{});", i, v[i].serialize())
-		// }
-
-		assert_eq!(145, v.len());
-		assert_eq!(v[5], NonZeroCoeff::new(10160, 2171, 6));
-		assert_eq!(v[6], NonZeroCoeff::new(10252, 2171, 6));
-		assert_eq!(v[7], NonZeroCoeff::new(10340, 2171, 6));
-		assert_eq!(v[8], NonZeroCoeff::new(6187, 2456, 1));
-		assert_eq!(v[9], NonZeroCoeff::new(3133, 3075, 1));
-		assert_eq!(v[10], NonZeroCoeff::new(3721, 3082, 10));
-		assert_eq!(v[11], NonZeroCoeff::new(6106, 3082, 10));
-		assert_eq!(v[12], NonZeroCoeff::new(6107, 3082, 10));
-		assert_eq!(v[13], NonZeroCoeff::new(6108, 3082, 10));
-		assert_eq!(v[14], NonZeroCoeff::new(6109, 3082, 10));
+pub fn calculate_degrees<'a>(
+	categories: &mut CategoryHash<Category>,
+	category_links: impl Iterator<Item = &'a CategoryLinks>,
+) {
+	for edge in category_links {
+		categories.get_by_index_mut(edge.from).unwrap().incr_dout()
 	}
 }
+
+
+#[cfg(test)]
+mod tests;

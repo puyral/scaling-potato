@@ -11,3 +11,4 @@ regex = "1"
 sprs = "0.9.3" # sparse matrix
 rayon = "1.5" # parralel
 ordered-float = "2.0"
+num-traits = "0.2"
