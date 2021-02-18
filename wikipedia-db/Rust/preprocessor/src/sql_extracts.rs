@@ -4,13 +4,15 @@ use atomic_counter::{AtomicCounter, RelaxedCounter};
 use rayon::prelude::*;
 
 use crate::algebra::NonZeroCoeff;
-use crate::sql_extracts::categories::category::{AbstractCategory, Category, PageRanked};
 use crate::sql_extracts::categories::category::category_hash::CategoryHash;
+use crate::sql_extracts::categories::category::{AbstractCategory, Category, PageRanked};
 use crate::sql_extracts::categories::category_links::{CategoryCategorySql, CategoryLinks};
 
 pub mod categories;
 pub mod extractor;
 
+/// turns `category_links` into valid non-zero coefficients to be used for a page rank. Make sure to
+/// have called [`calculate_degree`] on `categories` before hand
 pub fn calculate_nzc<'a>(
     categories: &'a CategoryHash<Category>,
     category_links: &'a Vec<CategoryLinks>,
@@ -24,18 +26,22 @@ pub fn calculate_nzc<'a>(
     })
 }
 
+/// Calculate $\delta_{out}$ of every category. This is done sequentially and in place in `categories`
 pub fn calculate_degrees<'a>(
     categories: &mut CategoryHash<Category>,
     category_links: impl Iterator<Item = &'a CategoryLinks>,
 ) {
     for edge in category_links {
         match categories.get_by_index_mut(edge.from) {
-            None => eprintln!("no category with id {}, skipping...", edge.from),
+            None => (),
             Some(category) => category.incr_dout(),
         }
     }
 }
 
+/// update the `pr` field of the [`Category`]s
+///
+/// It also filters out the useless [`CategoryLinks`]. This is where the program does something useful
 pub fn collect_pr<'a>(
     categories: &'a mut CategoryHash<Category>,
     category_links: impl ParallelIterator<Item = &'a CategoryLinks> + 'a,
@@ -51,11 +57,14 @@ pub fn collect_pr<'a>(
     })
 }
 
+/// Get a level higher from the plain sql
+///
+/// `from_err_counter` and `to_err_counter` are monitoring counters to count how many dead link there were
 pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
-	categories: &'a CategoryHash<C>,
-	category_links: impl ParallelIterator<Item = CategoryCategorySql> + 'a,
-	from_err_counter: &'a RelaxedCounter,
-	to_err_counter: &'a RelaxedCounter,
+    categories: &'a CategoryHash<C>,
+    category_links: impl ParallelIterator<Item = CategoryCategorySql> + 'a,
+    from_err_counter: &'a RelaxedCounter,
+    to_err_counter: &'a RelaxedCounter,
 ) -> impl ParallelIterator<Item = CategoryLinks> + 'a {
     category_links.filter_map(move |c| {
         match (
@@ -68,11 +77,11 @@ pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
             }),
             (to, from) => {
                 if to.is_none() {
-					to_err_counter.inc();
+                    to_err_counter.inc();
                     // eprintln!("no category named \"{}\", skipping...", &c.to);
                 }
                 if from.is_none() {
-					from_err_counter.inc();
+                    from_err_counter.inc();
                     // eprintln!("no category with id {}, skipping...", &c.from);
                 }
                 None

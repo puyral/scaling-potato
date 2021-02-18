@@ -4,6 +4,7 @@ use rayon::prelude::*;
 
 use crate::sql_extracts::categories::category::AbstractCategory;
 
+/// To recover the Categories via their title and/or their indices somewhat efficiently both in space and time
 pub struct CategoryHash<C: AbstractCategory> {
     vec: Vec<C>,
     by_indices: HashMap<u32, usize>,
@@ -12,21 +13,21 @@ pub struct CategoryHash<C: AbstractCategory> {
 
 impl<C> FromParallelIterator<C> for CategoryHash<C>
 where
-	C: Sync + Send + AbstractCategory,
+    C: Sync + Send + AbstractCategory,
 {
-	fn from_par_iter<I>(par_iter: I) -> Self
-						where
-							I: IntoParallelIterator<Item = C>,
-	{
-		let vec = Vec::from_par_iter(par_iter);
-		let by_indices: HashMap<_, _> = vec
-			.par_iter()
-			.enumerate()
-			.map(|(i, c)| (c.get_id(), i))
-			.collect();
-		let by_title: HashMap<_, _> = vec
-			.par_iter()
-			.enumerate()
+    fn from_par_iter<I>(par_iter: I) -> Self
+    where
+        I: IntoParallelIterator<Item = C>,
+    {
+        let vec = Vec::from_par_iter(par_iter);
+        let by_indices: HashMap<_, _> = vec
+            .par_iter()
+            .enumerate()
+            .map(|(i, c)| (c.get_id(), i))
+            .collect();
+        let by_title: HashMap<_, _> = vec
+            .par_iter()
+            .enumerate()
             .map(|(i, c)| (c.get_title().to_owned(), i))
             .collect();
 
@@ -64,10 +65,10 @@ impl<C: AbstractCategory> CategoryHash<C> {
 }
 
 impl<C: AbstractCategory> CategoryHash<C> {
-	pub fn get_data(&self) -> &Vec<C> {
-		&self.vec
-	}
-	pub fn len(&self) -> usize {
-		self.vec.len()
-	}
+    pub fn get_data(&self) -> &Vec<C> {
+        &self.vec
+    }
+    pub fn len(&self) -> usize {
+        self.vec.len()
+    }
 }

@@ -35,7 +35,7 @@ version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0e60b75072ecd4168020818c0107f2857bb6c4e64252d8d3983f6263b40a5c3"
 dependencies = [
-    "num-traits",
+ "num-traits",
 ]
 
 [[package]]
@@ -50,9 +50,9 @@ version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d9b39be18770d11421cdb1b9947a45dd3f37e93092cbf377614828a319d5fee8"
 dependencies = [
-    "hermit-abi",
-    "libc",
-    "winapi",
+ "hermit-abi",
+ "libc",
+ "winapi",
 ]
 
 [[package]]
@@ -246,8 +246,8 @@ version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "05499f3756671c15885fee9034446956fff3f243d6077b91e5767df161f766b3"
 dependencies = [
-    "hermit-abi",
-    "libc",
+ "hermit-abi",
+ "libc",
 ]
 
 [[package]]
@@ -275,13 +275,13 @@ dependencies = [
 name = "preprocessor"
 version = "0.2.0"
 dependencies = [
-    "atomic-counter",
-    "clap",
-    "ordered-float",
-    "rayon",
-    "regex",
-    "sprs",
-    "termion",
+ "atomic-counter",
+ "clap",
+ "ordered-float",
+ "rayon",
+ "regex",
+ "sprs",
+ "termion",
 ]
 
 [[package]]
@@ -308,11 +308,11 @@ version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ab346ac5921dc62ffa9f89b7a773907511cdfa5490c572ae9be1be33e8afa4a"
 dependencies = [
-    "crossbeam-channel",
-    "crossbeam-deque",
-    "crossbeam-utils",
-    "lazy_static",
-    "num_cpus",
+ "crossbeam-channel",
+ "crossbeam-deque",
+ "crossbeam-utils",
+ "lazy_static",
+ "num_cpus",
 ]
 
 [[package]]
@@ -321,7 +321,7 @@ version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94341e4e44e24f6b591b59e47a8a027df12e008d73fd5672dbea9cc22f4507d9"
 dependencies = [
-    "bitflags",
+ "bitflags",
 ]
 
 [[package]]
@@ -330,7 +330,7 @@ version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8440d8acb4fd3d277125b4bd01a6f38aee8d814b3b5fc09b3f2b825d37d3fe8f"
 dependencies = [
-    "redox_syscall",
+ "redox_syscall",
 ]
 
 [[package]]
@@ -339,9 +339,9 @@ version = "1.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d9251239e129e16308e70d853559389de218ac275b515068abc96829d05b948a"
 dependencies = [
-    "aho-corasick",
-    "memchr",
-    "regex-syntax",
+ "aho-corasick",
+ "memchr",
+ "regex-syntax",
  "thread_local",
 ]
 
@@ -374,8 +374,8 @@ dependencies = [
  "num-complex",
  "num-traits",
  "num_cpus",
-    "rayon",
-    "smallvec",
+ "rayon",
+ "smallvec",
 ]
 
 [[package]]
@@ -390,10 +390,10 @@ version = "1.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "077185e2eac69c3f8379a4298e1e07cd36beb962290d4a51199acf0fdc10607e"
 dependencies = [
-    "libc",
-    "numtoa",
-    "redox_syscall",
-    "redox_termios",
+ "libc",
+ "numtoa",
+ "redox_syscall",
+ "redox_termios",
 ]
 
 [[package]]
@@ -402,7 +402,7 @@ version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d326610f408c7a4eb6f51c37c330e496b08506c9457c9d34287ecc38809fb060"
 dependencies = [
-    "unicode-width",
+ "unicode-width",
 ]
 
 [[package]]

@@ -8,7 +8,14 @@ use sprs::{CsMatI, CsVecI, TriMatI};
 
 use crate::algebra::NonZeroCoeff;
 
-/// (from, to, _)
+/// Make a sparse matrix for a page rank
+///
+/// The order of the tuples is the following : `(from, to, 1/degree)`
+///
+/// # Notes
+///  - the transposition is already made in the function
+/// # Panics
+/// If `dimension` is to small. A good idea is to take the dimension of the vector coming out of [`make_vec`]
 pub fn make_matrix(
     nzcs: impl ParallelIterator<Item = (u32, u32, f64)>,
     dimension: usize,
@@ -34,9 +41,10 @@ pub fn make_matrix(
         row_inds,
         data,
     )
-        .to_csc()
+    .to_csc()
 }
 
+/// Make a vector `v` such that `v[i]` is `1.0` if and only if `i` is in the iterator
 pub fn make_vec(nzc: impl ParallelIterator<Item = u32>) -> CsVecI<f64, u32> {
     let vec = Vec::from_par_iter(nzc);
     let m = *vec.iter().max().unwrap_or(&0) + 1;
@@ -46,7 +54,7 @@ pub fn make_vec(nzc: impl ParallelIterator<Item = u32>) -> CsVecI<f64, u32> {
     CsVecI::new(m as usize, vec, vec![1.0; n])
 }
 
-pub fn collect(matrix: CsMatI<f64, u32>, vec: CsVecI<f64, u32>) -> Vec<NonZeroCoeff<usize, f64>> {
+/*pub fn collect(matrix: CsMatI<f64, u32>, vec: CsVecI<f64, u32>) -> Vec<NonZeroCoeff<usize, f64>> {
     assert!(matrix.is_csr());
 
     let tmp: HashMap<_, _> = vec.iter().collect();
@@ -70,4 +78,4 @@ pub fn collect(matrix: CsMatI<f64, u32>, vec: CsVecI<f64, u32>) -> Vec<NonZeroCo
                 }
             }),
     )
-}
+}*/

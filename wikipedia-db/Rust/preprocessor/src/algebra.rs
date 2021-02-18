@@ -7,6 +7,7 @@ pub mod page_rank;
 #[cfg(test)]
 mod tests;
 
+/// General non-zero coefficient to be used in in the sparse structures
 #[derive(Debug)]
 pub struct NonZeroCoeff<I, D> {
     from: I,
@@ -54,8 +55,8 @@ impl NonZeroCoeff<u32, f64> {
 }
 
 impl<I> NonZeroCoeff<I, f64>
-    where
-        I: Copy,
+where
+    I: Copy,
 {
     pub fn to_tuple_calculate(&self) -> (I, I, f64) {
         (self.from, self.to, 1.0 / self.data)

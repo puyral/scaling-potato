@@ -19,3 +19,6 @@ termion = "1.5.6"
 
 [profile.release]
 opt-level = 3
+
+[build]
+rustdocflags = [ "--html-in-header", "./src/docs-header.html" ]
