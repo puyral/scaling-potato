@@ -15,8 +15,7 @@ pub trait PageRanked {
 	fn set_pr(&mut self, pr: f64);
 }
 
-#[derive(Debug)]
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct Category {
 	id: u32,
 	title: String,
@@ -37,15 +36,27 @@ impl Default for Category {
 
 impl Category {
 	pub fn new(id: u32, title: String) -> Self {
-		Category { id, title, ..Default::default() }
+		Category {
+			id,
+			title,
+			..Default::default()
+		}
 	}
-	pub fn get_dout(&self) -> u32 { self.dout }
-	pub fn incr_dout(&mut self) { self.dout += 1 }
+	pub fn get_dout(&self) -> u32 {
+		self.dout
+	}
+	pub fn incr_dout(&mut self) {
+		self.dout += 1
+	}
 }
 
 impl PageRanked for Category {
-	fn get_pr(&self) -> f64 { self.pr }
-	fn set_pr(&mut self, pr: f64) { self.pr = pr }
+	fn get_pr(&self) -> f64 {
+		self.pr
+	}
+	fn set_pr(&mut self, pr: f64) {
+		self.pr = pr
+	}
 }
 
 impl AbstractCategory for Category {
@@ -61,7 +72,6 @@ impl AbstractCategory for Category {
 		self.title
 	}
 }
-
 
 impl SqlExtractable for Category {
 	// const PATTERN: &'static str = r"(?P<id>\d+),'(?P<title>(?:[^']|(?:\\'))*)'(?:,\d+){3}";
