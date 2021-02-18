@@ -46,7 +46,7 @@ impl<C: AbstractCategory> CategoryHash<C> {
 		}
 	}
 
-	pub fn len(&self) -> usize { self.vec.len() }
+	// pub fn len(&self) -> usize { self.vec.len() }
 }
 
 impl<C: AbstractCategory> CategoryHash<C> {

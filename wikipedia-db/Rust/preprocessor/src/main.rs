@@ -1,15 +1,12 @@
-use std::fs;
+use std::fs::File;
 
-use preprocessor::extract;
+use preprocessor::run;
 
 fn main() {
-	let contents = fs::read_to_string("../one_line_categories")
-		.expect("Something went wrong reading the file");
+	let text_cat = File::open("test_samples/nrm/nrmwiki-20210201-page.sql")
+		.expect("Something went wrong reading the file one_line_categories");
+	let text_links = File::open("test_samples/nrm/nrmwiki-20210201-categorylinks.sql")
+		.expect("Something went wrong reading the file one_line_categorieslinks");
 
-	//println!("{}", contents);
-	let vect = extract(contents);
-
-	for v in vect {
-		println!("{:?}", v)
-	}
+	run(text_cat, text_links)
 }

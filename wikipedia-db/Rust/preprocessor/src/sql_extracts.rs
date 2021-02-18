@@ -3,7 +3,7 @@
 use rayon::prelude::*;
 
 use crate::algebra::NonZeroCoeff;
-use crate::sql_extracts::categories::category::{AbstractCategory, Category, PageRanked};
+use crate::sql_extracts::categories::category::{Category, PageRanked};
 use crate::sql_extracts::categories::category::category_hash::CategoryHash;
 use crate::sql_extracts::categories::category_links::CategoryLinks;
 

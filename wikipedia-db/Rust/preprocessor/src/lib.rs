@@ -57,7 +57,7 @@ pub fn run(categories_files: File, category_links_file: File) {
 			.map(|c| c.to_tuple_calculate()),
 		vec.dim());
 
-	let page_rank = algebra::page_rank::page_rank(&matrix, &vec, 0.0, 1e-20);
+	let page_rank = algebra::page_rank::page_rank(&matrix, &vec, 0.2, 1e-15);
 
 	// let mut tmp: Vec<_> = algebra::lib::collect(matrix, res).iter().map(|c| {
 	// 	let (from, to, pr) = c.to_tuple();
@@ -67,14 +67,14 @@ pub fn run(categories_files: File, category_links_file: File) {
 	// // println!("{:?}", tmp);
 	// tmp.iter().for_each(|vf| println!("{}\tid:{}, parent:{}", vf.data, vf.id, vf.parent))
 
-	let final_category_links: Vec<_> =
+	let _final_category_links: Vec<_> =
 		sql_extracts::collect_pr(
 			&mut categories,
 			category_links.par_iter(),
 			page_rank.iter().map(|(id, value)| (id as u32, value))).collect();
 
 	let mut category_vec: Vec<_> = categories.get_data().into_par_iter().collect();
-	category_vec.sort_unstable_by_key(|c| OrderedFloat(c.get_pr()));
+	category_vec.sort_unstable_by_key(|c| OrderedFloat(-c.get_pr()));
 	category_vec.iter().for_each(|c| {
 		println!("{:?}", c)
 	})
