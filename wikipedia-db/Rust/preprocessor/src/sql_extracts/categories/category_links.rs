@@ -1,8 +1,5 @@
-use rayon::iter::ParallelIterator;
 use regex::Captures;
 
-use crate::sql_extracts::categories::category::AbstractCategory;
-use crate::sql_extracts::categories::category::category_hash::CategoryHash;
 use crate::sql_extracts::extractor::SqlExtractable;
 
 /// Because Wikipedia decided to have a structure id -> name (*yay....*) we must use this
@@ -30,22 +27,4 @@ impl SqlExtractable for CategoryCategorySql {
 pub struct CategoryLinks {
 	pub from: u32,
 	pub to: u32,
-}
-
-pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
-	categories: &'a CategoryHash<C>,
-	category_links: impl ParallelIterator<Item = CategoryCategorySql> + 'a,
-) -> impl ParallelIterator<Item = CategoryLinks> + 'a {
-	category_links.filter_map(move |c| {
-		match categories.get_by_title(&c.to) {
-			None => {
-				eprintln!("no category {}, skipping...", &c.to);
-				None
-			}
-			Some(category) => Some(CategoryLinks {
-				from: c.from,
-				to: category.get_id(),
-			})
-		}
-	})
 }

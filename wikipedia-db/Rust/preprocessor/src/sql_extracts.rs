@@ -3,9 +3,9 @@
 use rayon::prelude::*;
 
 use crate::algebra::NonZeroCoeff;
-use crate::sql_extracts::categories::category::{Category, PageRanked};
+use crate::sql_extracts::categories::category::{AbstractCategory, Category, PageRanked};
 use crate::sql_extracts::categories::category::category_hash::CategoryHash;
-use crate::sql_extracts::categories::category_links::CategoryLinks;
+use crate::sql_extracts::categories::category_links::{CategoryCategorySql, CategoryLinks};
 
 pub mod extractor;
 pub mod categories;
@@ -24,7 +24,10 @@ pub fn calculate_degrees<'a>(
 	category_links: impl Iterator<Item = &'a CategoryLinks>,
 ) {
 	for edge in category_links {
-		categories.get_by_index_mut(edge.from).unwrap().incr_dout()
+		match categories.get_by_index_mut(edge.from) {
+			None => eprintln!("no category with id {}, skipping...", edge.from),
+			Some(category) => category.incr_dout()
+		}
 	}
 }
 
@@ -45,6 +48,28 @@ pub fn collect_pr<'a>(
 	})
 }
 
+pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
+	categories: &'a CategoryHash<C>,
+	category_links: impl ParallelIterator<Item = CategoryCategorySql> + 'a,
+) -> impl ParallelIterator<Item = CategoryLinks> + 'a {
+	category_links.filter_map(move |c| {
+		match (categories.get_by_title(&c.to), categories.get_by_index(c.from)) {
+			(Some(category), Some(_)) => Some(CategoryLinks {
+				from: c.from,
+				to: category.get_id(),
+			}),
+			(to, from) => {
+				if to.is_none() {
+					eprintln!("no category named \"{}\", skipping...", &c.to);
+				}
+				if from.is_none() {
+					eprintln!("no category with id {}, skipping...", &c.from);
+				}
+				None
+			}
+		}
+	})
+}
 
 #[cfg(test)]
 mod tests;

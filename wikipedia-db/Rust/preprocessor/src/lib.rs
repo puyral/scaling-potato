@@ -39,17 +39,21 @@ pub fn extract_categories(text: String) -> HashMap<String, Category> {
 
 
 pub fn run(categories_files: File, category_links_file: File) {
+	println!("---Parsing Categories---");
 	let mut categories: CategoryHash<_> =
 		Extractor::extract_par_iter_file::<Category>(categories_files).collect();
 
+	println!("---Parsing & Precessing Links---");
 	let category_links: Vec<_> =
-		sql_extracts::categories::category_links::to_category_links_vec(
+		sql_extracts::to_category_links_vec(
 			&categories,
 			Extractor::extract_par_iter_file::<CategoryCategorySql>(category_links_file),
 		).collect();
 
+	println!("---Calculating degrees---");
 	sql_extracts::calculate_degrees(&mut categories, category_links.iter());
 
+	println!("---Switching to Algebra---");
 	let vec = algebra::lib::make_vec(
 		categories.get_data().par_iter().map(|c| c.get_id()));
 	let matrix = algebra::lib::make_matrix(
@@ -57,16 +61,10 @@ pub fn run(categories_files: File, category_links_file: File) {
 			.map(|c| c.to_tuple_calculate()),
 		vec.dim());
 
+	println!("---Pageranking---");
 	let page_rank = algebra::page_rank::page_rank(&matrix, &vec, 0.2, 1e-15);
 
-	// let mut tmp: Vec<_> = algebra::lib::collect(matrix, res).iter().map(|c| {
-	// 	let (from, to, pr) = c.to_tuple();
-	// 	CategoryF { id: from as u32, parent: to as u32, data: pr }
-	// }).collect();
-	// tmp.sort_by_key(|nzcf| OrderedFloat(nzcf.data));
-	// // println!("{:?}", tmp);
-	// tmp.iter().for_each(|vf| println!("{}\tid:{}, parent:{}", vf.data, vf.id, vf.parent))
-
+	println!("---Extracting results---");
 	let _final_category_links: Vec<_> =
 		sql_extracts::collect_pr(
 			&mut categories,
