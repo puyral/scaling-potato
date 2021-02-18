@@ -21,9 +21,9 @@ impl<I, D> NonZeroCoeff<I, D> {
 }
 
 impl<I, D> NonZeroCoeff<I, D>
-    where
-        I: Copy,
-        D: Copy,
+where
+    I: Copy,
+    D: Copy,
 {
     pub fn to_tuple(&self) -> (I, I, D) {
         (self.from, self.to, self.data)

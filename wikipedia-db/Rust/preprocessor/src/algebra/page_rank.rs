@@ -3,6 +3,7 @@ use std::io::Write;
 use std::ops::Add;
 
 use sprs::{CsMatI, CsVecI};
+use termion::{clear, color, style};
 
 /// Applies the PageRank algorithm:
 pub fn page_rank(
@@ -25,7 +26,12 @@ pub fn page_rank(
 	while diff > epsilon {
 		// so the epsilon doesn't depends on size of the graph
 
-		print!("\r\tnorm: {},\tdiff: {}", pi_new.l1_norm(), diff);
+		print!(
+			"\r{clear}\tnorm: {},\tdiff: {}",
+			pi_new.l1_norm(),
+			diff,
+			clear = clear::CurrentLine
+		);
 		io::stdout().flush().ok().expect("Could not flush stdout");
 		pi_old = pi_new.map(|&d| -d);
 		// pi_new = csr_mul_csvec(m.view(), pi_new.view()).map(|&d| d * bm).add(&pi_added);
@@ -35,10 +41,15 @@ pub fn page_rank(
 		i += 1;
 	}
 	println!(
-		"\r\tnorm: {},\tdiff: {}\n\t[DONE] (in {} loops)",
+		"\r{clear}\tnorm: {}\n\tdiff: {}\n\t{green}{bold}[DONE]{reset_c}{reset_s} (in {} loops)",
 		pi_new.l1_norm(),
 		diff,
-		i
+		i,
+		clear = clear::CurrentLine,
+		bold = style::Bold,
+		green = color::Fg(color::Green),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
 	);
 	pi_new
 }

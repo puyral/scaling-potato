@@ -1,5 +1,6 @@
 //! The sql extraction
 
+use atomic_counter::{AtomicCounter, RelaxedCounter};
 use rayon::prelude::*;
 
 use crate::algebra::NonZeroCoeff;
@@ -51,8 +52,10 @@ pub fn collect_pr<'a>(
 }
 
 pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
-    categories: &'a CategoryHash<C>,
-    category_links: impl ParallelIterator<Item = CategoryCategorySql> + 'a,
+	categories: &'a CategoryHash<C>,
+	category_links: impl ParallelIterator<Item = CategoryCategorySql> + 'a,
+	from_err_counter: &'a RelaxedCounter,
+	to_err_counter: &'a RelaxedCounter,
 ) -> impl ParallelIterator<Item = CategoryLinks> + 'a {
     category_links.filter_map(move |c| {
         match (
@@ -65,9 +68,11 @@ pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
             }),
             (to, from) => {
                 if to.is_none() {
+					to_err_counter.inc();
                     // eprintln!("no category named \"{}\", skipping...", &c.to);
                 }
                 if from.is_none() {
+					from_err_counter.inc();
                     // eprintln!("no category with id {}, skipping...", &c.from);
                 }
                 None

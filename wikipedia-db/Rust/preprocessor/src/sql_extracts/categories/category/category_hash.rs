@@ -11,22 +11,22 @@ pub struct CategoryHash<C: AbstractCategory> {
 }
 
 impl<C> FromParallelIterator<C> for CategoryHash<C>
-    where
-        C: Sync + Send + AbstractCategory,
+where
+	C: Sync + Send + AbstractCategory,
 {
-    fn from_par_iter<I>(par_iter: I) -> Self
-                        where
-                            I: IntoParallelIterator<Item = C>,
-    {
-        let vec = Vec::from_par_iter(par_iter);
-        let by_indices: HashMap<_, _> = vec
-            .par_iter()
-            .enumerate()
-            .map(|(i, c)| (c.get_id(), i))
-            .collect();
-        let by_title: HashMap<_, _> = vec
-            .par_iter()
-            .enumerate()
+	fn from_par_iter<I>(par_iter: I) -> Self
+						where
+							I: IntoParallelIterator<Item = C>,
+	{
+		let vec = Vec::from_par_iter(par_iter);
+		let by_indices: HashMap<_, _> = vec
+			.par_iter()
+			.enumerate()
+			.map(|(i, c)| (c.get_id(), i))
+			.collect();
+		let by_title: HashMap<_, _> = vec
+			.par_iter()
+			.enumerate()
             .map(|(i, c)| (c.get_title().to_owned(), i))
             .collect();
 
@@ -64,7 +64,10 @@ impl<C: AbstractCategory> CategoryHash<C> {
 }
 
 impl<C: AbstractCategory> CategoryHash<C> {
-    pub fn get_data(&self) -> &Vec<C> {
-        &self.vec
-    }
+	pub fn get_data(&self) -> &Vec<C> {
+		&self.vec
+	}
+	pub fn len(&self) -> usize {
+		self.vec.len()
+	}
 }

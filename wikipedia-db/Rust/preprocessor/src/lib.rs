@@ -2,7 +2,9 @@ use std::fs::File;
 use std::io;
 use std::io::Write;
 
+use atomic_counter::{AtomicCounter, RelaxedCounter};
 use rayon::prelude::*;
+use termion::{color, style};
 
 use crate::sql_extracts::categories::category::{AbstractCategory, Category, PageRanked};
 use crate::sql_extracts::categories::category::category_hash::CategoryHash;
@@ -46,16 +48,37 @@ pub fn run(
 	io::stdout().flush().ok().expect("Could not flush stdout");
 	let mut categories: CategoryHash<_> =
 		Extractor::extract_par_iter_file::<Category>(categories_files).collect();
-	println!("[DONE]");
+	// println!("[DONE] ({} categories)", categories.len());
+	println!(
+		"{green}{bold}[DONE]{reset_c}{reset_s} ({} categories)",
+		categories.len(),
+		bold = style::Bold,
+		green = color::Fg(color::Green),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
+	);
 
 	print!("Parsing and precessing links...");
 	io::stdout().flush().ok().expect("Could not flush stdout");
+
+	let from_err_counter = RelaxedCounter::new(0);
+	let to_err_counter = RelaxedCounter::new(0);
 	let category_links: Vec<_> = sql_extracts::to_category_links_vec(
 		&categories,
 		Extractor::extract_par_iter_file::<CategoryCategorySql>(category_links_file),
+		&from_err_counter,
+		&to_err_counter,
 	)
 		.collect();
-	println!("[DONE]");
+	println!("{green}{bold}[DONE]{reset_c}{reset_s}\n\t({} links, skipped {} unknown ids (to) and {} unknown titles (from))",
+			 category_links.len(),
+			 to_err_counter.get(),
+			 from_err_counter.get(),
+			 bold = style::Bold,
+			 green = color::Fg(color::Green),
+			 reset_c = color::Fg(color::Reset),
+			 reset_s = style::Reset
+	);
 
 	print!("Calculating degrees...");
 	io::stdout().flush().ok().expect("Could not flush stdout");
@@ -69,7 +92,13 @@ pub fn run(
 		sql_extracts::calculate_nzc(&categories, &category_links).map(|c| c.to_tuple_calculate()),
 		vec.dim(),
 	);
-	println!("[DONE]");
+	println!(
+		"{green}{bold}[DONE]{reset_c}{reset_s}",
+		bold = style::Bold,
+		green = color::Fg(color::Green),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
+	);
 
 	println!("Pageranking...");
 	let page_rank = algebra::page_rank::page_rank(&matrix, &vec, beta, epsilon);
@@ -82,7 +111,13 @@ pub fn run(
 		page_rank.iter().map(|(id, value)| (id as u32, value)),
 	)
 		.collect();
-	println!("[DONE]");
+	println!(
+		"{green}{bold}[DONE]{reset_c}{reset_s}",
+		bold = style::Bold,
+		green = color::Fg(color::Green),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
+	);
 
 	print!("Finalizing...");
 	io::stdout().flush().ok().expect("Could not flush stdout");
@@ -90,7 +125,13 @@ pub fn run(
 	for &c in final_category_links {
 		out_category_links.push(c)
 	}
-	println!("[DONE]");
+	println!(
+		"{green}{bold}[DONE]{reset_c}{reset_s}",
+		bold = style::Bold,
+		green = color::Fg(color::Green),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
+	);
 	(categories, out_category_links)
 }
 
@@ -119,7 +160,14 @@ pub fn make_sql(
 		);\n",
 		wiki_name = wiki_name
 	));
-	println!("\tcreating table...[DONE]");
+	print!("\tcreating table...");
+	println!(
+		"{green}{bold}[DONE]{reset_c}{reset_s}",
+		bold = style::Bold,
+		green = color::Fg(color::Green),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
+	);
 
 	print!("\tadding data...");
 	io::stdout().flush().ok().expect("Could not flush stdout");
@@ -151,7 +199,13 @@ pub fn make_sql(
 			});
 		});
 	});
-	println!("[DONE]");
+	println!(
+		"{green}{bold}[DONE]{reset_c}{reset_s}",
+		bold = style::Bold,
+		green = color::Fg(color::Green),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
+	);
 
 	print!("\tMerging Strings and finalizing...");
 	io::stdout().flush().ok().expect("Could not flush stdout");
@@ -161,7 +215,13 @@ pub fn make_sql(
 
 	// finalize commit
 	out.push_str("COMMIT;");
-	println!("[DONE]");
+	println!(
+		"{green}{bold}[DONE]{reset_c}{reset_s}",
+		bold = style::Bold,
+		green = color::Fg(color::Green),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
+	);
 
 	out
 }

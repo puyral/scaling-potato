@@ -3,6 +3,7 @@ use std::io;
 use std::io::Write;
 
 use clap::{App, Arg};
+use termion::{color, style};
 
 use preprocessor::{make_sql, run};
 
@@ -63,37 +64,64 @@ fn main() {
 		.get_matches();
 
 	// process args
-	let categories_path = matches.value_of("categories").expect("required argument");
-	let category_links_path = matches
-		.value_of("category links")
-		.expect("required argument");
-	let out_path = matches.value_of("output file").expect("required argument");
+	let categories_path = matches.value_of("categories").expect(&*format!(
+		"{red}required argument",
+		red = color::Fg(color::Red)
+	));
+	let category_links_path = matches.value_of("category links").expect(&*format!(
+		"{red}required argument",
+		red = color::Fg(color::Red)
+	));
+	let out_path = matches.value_of("output file").expect(&*format!(
+		"{red}required argument",
+		red = color::Fg(color::Red)
+	));
 	let beta = matches
 		.value_of("beta")
 		.unwrap_or("0.2")
 		.parse::<f64>()
-		.expect("beta should be a float");
+		.expect(&*format!(
+			"{red}beta should be a float",
+			red = color::Fg(color::Red)
+		));
 	let epsilon = matches
 		.value_of("epsilon")
 		.unwrap_or("1e-10")
 		.parse::<f64>()
-		.expect("beta should be a float");
+		.expect(&*format!(
+			"{red}beta should be a float",
+			red = color::Fg(color::Red)
+		));
 
-	println!("[START]");
+	println!(
+		"{yellow}{bold}[START]{reset_c}{reset_s}",
+		bold = style::Bold,
+		yellow = color::Fg(color::Yellow),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
+	);
 
 	//open files
 	print!("Opening files...");
 	io::stdout().flush().ok().expect("Could not flush stdout");
 	let text_cat = File::open(categories_path).expect(&*format!(
-		"Something went wrong reading the categories file : {}",
-		categories_path
+		"{red}Something went wrong reading the categories file : {}",
+		categories_path,
+		red = color::Fg(color::Red)
 	));
 	let text_links = File::open(category_links_path).expect(&*format!(
-		"Something went wrong reading the category-links file : {}",
-		category_links_path
+		"{red}Something went wrong reading the category-links file : {}",
+		category_links_path,
+		red = color::Fg(color::Red)
 	));
 	let mut output = File::create(out_path).expect(&*format!("can't create file {}", out_path));
-	println!("[DONE]");
+	println!(
+		"{green}{bold}[DONE]{reset_c}{reset_s}",
+		bold = style::Bold,
+		green = color::Fg(color::Green),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
+	);
 
 	// do
 	let (categories, category_links) = run(text_cat, text_links, beta, epsilon);
@@ -103,8 +131,12 @@ fn main() {
 		.write_all(sql_output.as_bytes())
 		.expect("unable to write");
 	println!(
-		"[FINISHED] ({} categories and {} links)",
-		categories.get_data().len(),
-		category_links.len()
+		"{yellow}{bold}[FINISHED]{reset_c}{reset_s} ({} categories and {} links)",
+		categories.len(),
+		category_links.len(),
+		bold = style::Bold,
+		yellow = color::Fg(color::Yellow),
+		reset_c = color::Fg(color::Reset),
+		reset_s = style::Reset
 	)
 }
