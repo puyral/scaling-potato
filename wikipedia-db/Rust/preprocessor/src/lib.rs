@@ -42,8 +42,6 @@ pub fn run(categories_files: File, category_links_file: File) {
 	let mut categories: CategoryHash<_> =
 		Extractor::extract_par_iter_file::<Category>(categories_files).collect();
 
-	println!("{:?}", &categories.get_data());
-
 	let category_links: Vec<_> =
 		sql_extracts::categories::category_links::to_category_links_vec(
 			&categories,

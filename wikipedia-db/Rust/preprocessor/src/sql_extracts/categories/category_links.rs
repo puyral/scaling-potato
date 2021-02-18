@@ -19,6 +19,7 @@ impl SqlExtractable for CategoryCategorySql {
 		r"(?P<from>\d+),'(?P<to>(?:[^']|(?:\\'))*)'(?:,'(?:[^']|(?:\\'))*'){4},'subcat'"; //beautiful !!
 
 	fn from(cap: Captures) -> Self {
+		// println!("cap: {:?}, from:{}, to:{}", &cap, &cap["from"], &cap["to"]);
 		CategoryCategorySql {
 			from: cap["from"].parse::<u32>().unwrap(),
 			to: String::from(&cap["to"]),
@@ -33,12 +34,18 @@ pub struct CategoryLinks {
 
 pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
 	categories: &'a CategoryHash<C>,
-	catcats: impl ParallelIterator<Item = CategoryCategorySql> + 'a,
+	category_links: impl ParallelIterator<Item = CategoryCategorySql> + 'a,
 ) -> impl ParallelIterator<Item = CategoryLinks> + 'a {
-	catcats.map(move |c| {
-		CategoryLinks {
-			from: c.from,
-			to: categories.get_by_title(&c.to).expect(&*format!("no category {}", &c.to)).get_id(),
+	category_links.filter_map(move |c| {
+		match categories.get_by_title(&c.to) {
+			None => {
+				eprintln!("no category {}, skipping...", &c.to);
+				None
+			}
+			Some(category) => Some(CategoryLinks {
+				from: c.from,
+				to: category.get_id(),
+			})
 		}
 	})
 }
