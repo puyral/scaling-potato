@@ -25,10 +25,10 @@ pub fn make_matrix(nzcs: impl ParallelIterator<Item = (u32, u32, f64)>, dimensio
 	});
 	TriMatI::from_triplets(
 		(dimension, dimension),
+		col_inds, // We need to transpose
 		row_inds,
-		col_inds,
 		data,
-	).to_csr()
+	).to_csc()
 }
 
 pub fn make_vec(nzc: impl ParallelIterator<Item = u32>) -> CsVecI<f64, u32> {

@@ -33,12 +33,12 @@ pub struct CategoryLinks {
 
 pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
 	categories: &'a CategoryHash<C>,
-	catcats: impl ParallelIterator<Item = CategoryCategorySql> + 'a)
-	-> impl ParallelIterator<Item = CategoryLinks> + 'a {
+	catcats: impl ParallelIterator<Item = CategoryCategorySql> + 'a,
+) -> impl ParallelIterator<Item = CategoryLinks> + 'a {
 	catcats.map(move |c| {
 		CategoryLinks {
 			from: c.from,
-			to: categories.get_by_title(&c.to).unwrap().get_id(),
+			to: categories.get_by_title(&c.to).expect(&*format!("no category {}", &c.to)).get_id(),
 		}
 	})
 }

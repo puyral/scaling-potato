@@ -10,6 +10,11 @@ pub trait AbstractCategory {
 	fn get_title_move(self) -> String;
 }
 
+pub trait PageRanked {
+	fn get_pr(&self) -> f64;
+	fn set_pr(&mut self, pr: f64);
+}
+
 #[derive(Debug)]
 #[derive(PartialEq)]
 pub struct Category {
@@ -36,6 +41,11 @@ impl Category {
 	}
 	pub fn get_dout(&self) -> u32 { self.dout }
 	pub fn incr_dout(&mut self) { self.dout += 1 }
+}
+
+impl PageRanked for Category {
+	fn get_pr(&self) -> f64 { self.pr }
+	fn set_pr(&mut self, pr: f64) { self.pr = pr }
 }
 
 impl AbstractCategory for Category {
