@@ -1,6 +1,7 @@
 use std::fs::File;
+use std::io::Write;
 
-use crate::run;
+use crate::{make_sql, run};
 
 #[test]
 fn norman() {
@@ -9,5 +10,10 @@ fn norman() {
 	let text_links = File::open("../../nrm/nrmwiki-20210201-categorylinks.sql")
 		.expect("Something went wrong reading the file one_line_categorieslinks");
 
-	run(text_cat, text_links)
+	let (categories, category_links)
+		= run(text_cat, text_links);
+
+	let mut output = File::create("test_samples/nrm.sql").unwrap();
+	output.write_all(
+		make_sql(&categories.get_data(), &category_links, "nrm").as_bytes());
 }

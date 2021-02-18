@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use std::fs::File;
 use std::io::BufRead;
 use std::iter::FromIterator;
@@ -12,12 +11,12 @@ pub struct Extractor {
 }
 
 impl Extractor {
-	/// Do the actual extraction
-	/// - `sql` is the text to extract from
-	/// - `queue` is where to put the result, this is done so to be more practical for multithreading
-	pub fn extract<T: SqlExtractable>(&self, sql: &str, queue: &mut VecDeque<T>) -> () {
-		queue.extend(self.extract_iter(sql))
-	}
+	// /// Do the actual extraction
+	// /// - `sql` is the text to extract from
+	// /// - `queue` is where to put the result, this is done so to be more practical for multithreading
+	// pub fn extract<T: SqlExtractable>(&self, sql: &str, queue: &mut VecDeque<T>) -> () {
+	// 	queue.extend(self.extract_iter(sql))
+	// }
 
 	pub fn extract_iter<'a, T: SqlExtractable>(&'a self, sql: &'a str) -> impl Iterator<Item = T> + 'a {
 		self.rg.captures_iter(sql).map(|cap| { T::from(cap) })

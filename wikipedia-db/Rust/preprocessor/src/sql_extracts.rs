@@ -60,10 +60,10 @@ pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
 			}),
 			(to, from) => {
 				if to.is_none() {
-					eprintln!("no category named \"{}\", skipping...", &c.to);
+					// eprintln!("no category named \"{}\", skipping...", &c.to);
 				}
 				if from.is_none() {
-					eprintln!("no category with id {}, skipping...", &c.from);
+					// eprintln!("no category with id {}, skipping...", &c.from);
 				}
 				None
 			}

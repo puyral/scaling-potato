@@ -24,6 +24,7 @@ impl SqlExtractable for CategoryCategorySql {
 	}
 }
 
+#[derive(Clone, Copy)]
 pub struct CategoryLinks {
 	pub from: u32,
 	pub to: u32,
