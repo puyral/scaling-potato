@@ -1,4 +1,6 @@
-use regex::Captures;
+use std::str;
+
+use regex::bytes::Captures;
 
 use crate::sql_extracts::extractor::SqlExtractable;
 
@@ -15,10 +17,10 @@ impl SqlExtractable for CategoryCategorySql {
         r"(?P<from>\d+),'(?P<to>(?:[^']|(?:\\'))*)'(?:,'(?:[^']|(?:\\'))*'){4},'subcat'"; //beautiful !!
 
     fn from(cap: Captures) -> Self {
-        println!("cap: {:?}, from:{}, to:{}", &cap, &cap["from"], &cap["to"]);
+        // println!("cap: {:?}, from:{}, to:{}", &cap, str::from_utf8(&cap["from"]).unwrap(), str::from_utf8(&cap["to"]).unwrap());
         CategoryCategorySql {
-            from: cap["from"].parse::<u32>().unwrap(),
-            to: String::from(&cap["to"]),
+            from: str::from_utf8(&cap["from"]).expect("not a valid utf-8").parse::<u32>().expect("not a number"),
+            to: String::from_utf8(Vec::from(&cap["to"])).expect("not a valid utf-8"),
         }
     }
 }

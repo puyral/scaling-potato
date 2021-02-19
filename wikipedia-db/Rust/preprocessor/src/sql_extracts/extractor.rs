@@ -3,7 +3,7 @@ use std::io::BufRead;
 use std::iter::FromIterator;
 
 use rayon::prelude::*;
-use regex::{Captures, Regex};
+use regex::bytes::{Captures, Regex};
 
 /// A tool to extract the data from the `*.sql` files
 pub struct Extractor {
@@ -20,14 +20,15 @@ impl Extractor {
 
     pub fn extract_iter<'a, T: SqlExtractable>(
         &'a self,
-        sql: &'a str,
+        sql: &'a [u8],
     ) -> impl Iterator<Item = T> + 'a {
         self.rg.captures_iter(sql).map(|cap| T::from(cap))
     }
 
     /// Make a new [`Extractor`]. Make sure to tell what `T` when using this
     pub fn new<T: SqlExtractable>() -> Result<Self, regex::Error> {
-        let rg = Regex::new(&format!("\\({}\\)", T::PATTERN))?;
+        let rg = Regex::new(&format!("(?-u)\\({}\\)", T::PATTERN))?;
+        // println!("{:?}", rg.as_str());
         return Ok(Self { rg });
     }
 
@@ -36,10 +37,10 @@ impl Extractor {
         T: SqlExtractable + Send + Sync,
     {
         std::io::BufReader::new(file) // read the file
-            .lines() // split to lines serially
-            .filter_map(|line: Result<String, _>| line.ok()) // remove broken lines
+            .split('\n' as u8) // split to lines serially
+            .filter_map(|line: Result<_, _>| line.ok()) // remove broken lines
             .par_bridge() // parallelize
-            .flat_map(|sql| {
+            .flat_map(|sql: Vec<u8>| {
                 Vec::from_iter(Extractor::new::<T>().unwrap().extract_iter::<T>(&sql))
                     .into_par_iter()
             }) // do the work

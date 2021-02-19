@@ -19,17 +19,16 @@ for lang in "$@"
 do
 
 printf "
-dirs_${lang}:
-	mkdir \$(MKDIR_ARGS) \${SQL_PATH}/${lang}
+\$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql:
+	mkdir \$(MKDIR_ARGS) \${SQL_PATH}/${lang} && wget -O- https://dumps.wikimedia.org/${lang}wiki/latest/${lang}wiki-latest-page.sql.gz | gunzip -c > \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql
 
-\$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql: dirs_${lang}
-	wget -O- https://dumps.wikimedia.org/${lang}wiki/latest/${lang}wiki-latest-page.sql.gz | gunzip -c > \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql
-
-\$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql: dirs_${lang}
+\$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql:
 	wget -O- https://dumps.wikimedia.org/${lang}wiki/latest/${lang}wiki-latest-categorylinks.sql.gz | gunzip -c > \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql
 
-${lang}: \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql \$(EXE_PATH)/preprocessor
-	\$(EXE_PATH)/preprocessor -c \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql -C \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql \$(PAGE_RANK) -o \$(SQL_PATH)/%s/%s.sql
+\$(SQL_PATH)/${lang}/${lang}.sql: \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql \$(EXE_PATH)/preprocessor
+	\$(EXE_PATH)/preprocessor -c \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql -C \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql \$(PAGE_RANK) -o \$(SQL_PATH)/${lang}/${lang}.sql
+
+${lang}: \$(SQL_PATH)/${lang}/${lang}.sql
 
 clean_${lang}:
 	rm -rf \$(SQL_PATH)/${lang}
