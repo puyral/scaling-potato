@@ -1,12 +1,6 @@
-use std::collections::HashMap;
-use std::iter::FromIterator;
-
-use ordered_float::OrderedFloat;
 use rayon::iter::Either::*;
 use rayon::prelude::*;
 use sprs::{CsMatI, CsVecI, TriMatI};
-
-use crate::algebra::NonZeroCoeff;
 
 /// Make a sparse matrix for a page rank
 ///

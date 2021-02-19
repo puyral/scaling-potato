@@ -15,7 +15,7 @@ impl SqlExtractable for CategoryCategorySql {
         r"(?P<from>\d+),'(?P<to>(?:[^']|(?:\\'))*)'(?:,'(?:[^']|(?:\\'))*'){4},'subcat'"; //beautiful !!
 
     fn from(cap: Captures) -> Self {
-        // println!("cap: {:?}, from:{}, to:{}", &cap, &cap["from"], &cap["to"]);
+        println!("cap: {:?}, from:{}, to:{}", &cap, &cap["from"], &cap["to"]);
         CategoryCategorySql {
             from: cap["from"].parse::<u32>().unwrap(),
             to: String::from(&cap["to"]),
