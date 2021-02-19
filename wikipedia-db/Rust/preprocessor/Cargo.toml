@@ -1,10 +1,24 @@
 [package]
 name = "preprocessor"
-version = "0.1.0"
-authors = ["simony2222 <7871851+simony2222@users.noreply.github.com>"]
+version = "0.2.0"
+authors = ["simony2222 <7871851+simony2222@users.noreply.github.com>", "Hakido"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 regex = "1"
+sprs = "0.9.3" # sparse matrix
+rayon = "1.5" # parralel
+ordered-float = "2.0"
+#rusqlite = "0.24.2"
+#indicatif = {version = "0.15.0", features = ["rayon"]}
+clap = "2.33.3"
+atomic-counter = "1.0.1"
+termion = "1.5.6"
+
+[profile.release]
+opt-level = 3
+
+[build]
+rustdocflags = [ "--html-in-header", "./src/docs-header.html" ]

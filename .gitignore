@@ -3,3 +3,6 @@
 **/*.gz-rss
 **/*.gz
 **/.idea/*
+**/target/*
+**/Makefile
+**/*.sqlite

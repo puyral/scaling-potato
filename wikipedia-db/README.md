@@ -1,3 +1,10 @@
+# Preprocessing
+## how to use
+```
+./make_makefile.sh eo nrm br > Makefile && make sqlite
+```
+
+Where `eo nrm br` are the [wikipedia codes](https://en.wikipedia.org/wiki/List_of_Wikipedias) for the wikipedias to preprocess.
 # Wikipedia dumps
 
 According to [this idea](https://stackoverflow.com/questions/42983236/making-a-tree-of-wikipedia-links) I will put the wikipedia dumps here and there processed-version too. Will not be follow by git because there is a few GBs woth of data
