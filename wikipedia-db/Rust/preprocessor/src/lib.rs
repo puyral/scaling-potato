@@ -138,12 +138,12 @@ pub fn run(
 
 /// Print the result to a sql string.
 ///
-/// `wiki_name` is used to generate the names of the table (`{wiki_name}-categories`
-/// and `{wiki_name}-category-category`)
+/// `wp_code` is used to generate the names of the table (`{wp_code}-categories`
+/// and `{wp_code}-category-category`) see [List of Wikipedias](https://en.wikipedia.org/wiki/List_of_Wikipedias#Editions_overview)
 pub fn make_sql(
     categories: &Vec<Category>,
     category_links: &Vec<CategoryLinks>,
-    wiki_name: &str,
+    wp_code: &str,
 ) -> String {
     println!("Exporting to sql file...");
     let mut out = String::new();
@@ -163,7 +163,7 @@ pub fn make_sql(
 			FOREIGN KEY(`from_id`) REFERENCES `{wiki_name}-categories`(`id`),
 			FOREIGN KEY(`to_id`) REFERENCES `{wiki_name}-categories`(`id`)
 		);\n",
-        wiki_name = wiki_name
+        wiki_name = wp_code
     ));
     print!("\tcreating table...");
     println!(
@@ -185,7 +185,7 @@ pub fn make_sql(
             categories.iter().for_each(|c| {
                 categories_str.push_str(&*format!(
                     "INSERT INTO `{wiki_name}-categories` VALUES ({id}, {page_rank});\n",
-                    wiki_name = wiki_name,
+                    wiki_name = wp_code,
                     id = c.get_id(),
                     page_rank = c.get_pr()
                 ))
@@ -197,7 +197,7 @@ pub fn make_sql(
             category_links.iter().for_each(|c| {
                 categories_links_str.push_str(&*format!(
                     "INSERT INTO `{wiki_name}-category-category` VALUES ({from}, {to});\n",
-                    wiki_name = wiki_name,
+                    wiki_name = wp_code,
                     from = c.from,
                     to = c.to
                 ))

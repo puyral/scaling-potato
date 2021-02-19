@@ -6,43 +6,56 @@ EXE_PATH=\$(RUST_PATH)/target/release
 SQL_PATH=.
 PAGE_RANK=--beta 0.2 --epsilon 1e-15
 MKDIR_ARGS=-p
-
-\$(EXE_PATH)/preprocessor:
-	cargo build --manifest-path \$(RUST_PATH)/Cargo.toml --release
-
-clean_rust:
-	rm -rf \${EXE_PATH}
+SQLITE_FILE=./db.sqlite
 "
 
-
-for lang in "$@"
+printf "\n\nall:"
+for lang in "$@" 
 do
-
-printf "
-\$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql:
-	mkdir \$(MKDIR_ARGS) \${SQL_PATH}/${lang} && wget -O- https://dumps.wikimedia.org/${lang}wiki/latest/${lang}wiki-latest-page.sql.gz | gunzip -c > \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql
-
-\$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql:
-	wget -O- https://dumps.wikimedia.org/${lang}wiki/latest/${lang}wiki-latest-categorylinks.sql.gz | gunzip -c > \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql
-
-\$(SQL_PATH)/${lang}/${lang}.sql: \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql \$(EXE_PATH)/preprocessor
-	\$(EXE_PATH)/preprocessor -c \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql -C \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql \$(PAGE_RANK) -o \$(SQL_PATH)/${lang}/${lang}.sql
-
-${lang}: \$(SQL_PATH)/${lang}/${lang}.sql
-
-clean_${lang}:
-	rm -rf \$(SQL_PATH)/${lang}
-"
+printf " \$(SQL_PATH)/${lang}/${lang}.sql"
 done
 
-printf "\nclean: clean_rust"
+printf "\n\nsqlite:"
+for lang in "$@" 
+do
+printf " sqlite_${lang}"
+done
+
+printf "\n\nclean: clean_rust"
 for lang in "$@" 
 do
 printf " clean_%s" "$lang"
 done
 
-printf "\nall: "
-for lang in "$@" 
+printf "\n
+# --rust
+clean_rust:
+	rm -rf \${EXE_PATH}
+
+\$(EXE_PATH)/preprocessor:
+	cargo build --manifest-path \$(RUST_PATH)/Cargo.toml --release
+
+"
+
+for lang in "$@"
 do
-printf " %s" "$lang"
+
+printf "
+# --${lang}
+\$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql:
+	mkdir \$(MKDIR_ARGS) \${SQL_PATH}/${lang} && wget -O- https://dumps.wikimedia.org/${lang}wiki/latest/${lang}wiki-latest-page.sql.gz | gunzip -c > \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql
+
+\$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql:
+	mkdir \$(MKDIR_ARGS) \${SQL_PATH}/${lang} && wget -O- https://dumps.wikimedia.org/${lang}wiki/latest/${lang}wiki-latest-categorylinks.sql.gz | gunzip -c > \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql
+
+\$(SQL_PATH)/${lang}/${lang}.sql: \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql \$(EXE_PATH)/preprocessor
+	\$(EXE_PATH)/preprocessor --categories \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql --category-links \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql --out \$(SQL_PATH)/${lang}/${lang}.sql --language ${lang} \$(PAGE_RANK)
+
+sqlite_${lang}: \$(SQL_PATH)/${lang}/${lang}.sql
+	cat \$(SQL_PATH)/${lang}/${lang}.sql | sqlite3 \$(SQLITE_FILE)
+	sqlite3 -line \$(SQLITE_FILE) 'BEGIN; CREATE TABLE IF NOT EXISTS Wikipedias(name TEXT PRIMARY KEY); INSERT OR REPLACE INTO Wikipedias(name) VALUES (\"${lang}\"); COMMIT;'
+
+clean_${lang}:
+	rm -rf \$(SQL_PATH)/${lang}
+"
 done

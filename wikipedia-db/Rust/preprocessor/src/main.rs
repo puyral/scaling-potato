@@ -44,7 +44,14 @@ fn main() {
                 .help("The *.sql to put the result")
                 .required(true)
                 .value_name("FILE"),
-        )
+        ).arg(
+        Arg::with_name("WP-code")
+            .short("l")
+            .long("language")
+            .takes_value(true)
+            .help("The WP-code, see https://en.wikipedia.org/wiki/List_of_Wikipedias")
+            .required(true)
+            .value_name("WP"))
         .arg(
             Arg::with_name("beta")
                 .short("b")
@@ -73,6 +80,10 @@ fn main() {
         red = color::Fg(color::Red)
     ));
     let out_path = matches.value_of("output file").expect(&*format!(
+        "{red}required argument",
+        red = color::Fg(color::Red)
+    ));
+    let wp = matches.value_of("WP-code").expect(&*format!(
         "{red}required argument",
         red = color::Fg(color::Red)
     ));
@@ -125,7 +136,7 @@ fn main() {
 
     // do
     let (categories, category_links) = run(text_cat, text_links, beta, epsilon);
-    let sql_output = make_sql(&categories.get_data(), &category_links, "eo");
+    let sql_output = make_sql(&categories.get_data(), &category_links, wp);
 
     output
         .write_all(sql_output.as_bytes())
