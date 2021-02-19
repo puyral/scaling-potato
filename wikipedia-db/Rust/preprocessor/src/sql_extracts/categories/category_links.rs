@@ -19,7 +19,10 @@ impl SqlExtractable for CategoryCategorySql {
     fn from(cap: Captures) -> Self {
         // println!("cap: {:?}, from:{}, to:{}", &cap, str::from_utf8(&cap["from"]).unwrap(), str::from_utf8(&cap["to"]).unwrap());
         CategoryCategorySql {
-            from: str::from_utf8(&cap["from"]).expect("not a valid utf-8").parse::<u32>().expect("not a number"),
+            from: str::from_utf8(&cap["from"])
+                .expect("not a valid utf-8")
+                .parse::<u32>()
+                .expect("not a number"),
             to: String::from_utf8(Vec::from(&cap["to"])).expect("not a valid utf-8"),
         }
     }

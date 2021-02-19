@@ -44,14 +44,16 @@ fn main() {
                 .help("The *.sql to put the result")
                 .required(true)
                 .value_name("FILE"),
-        ).arg(
-        Arg::with_name("WP-code")
-            .short("l")
-            .long("language")
-            .takes_value(true)
-            .help("The WP-code, see https://en.wikipedia.org/wiki/List_of_Wikipedias")
-            .required(true)
-            .value_name("WP"))
+        )
+        .arg(
+            Arg::with_name("WP-code")
+                .short("l")
+                .long("language")
+                .takes_value(true)
+                .help("The WP-code, see https://en.wikipedia.org/wiki/List_of_Wikipedias")
+                .required(true)
+                .value_name("WP"),
+        )
         .arg(
             Arg::with_name("beta")
                 .short("b")
