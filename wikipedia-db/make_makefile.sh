@@ -49,7 +49,7 @@ printf "
 	mkdir \$(MKDIR_ARGS) \${SQL_PATH}/${lang} && wget -O- https://dumps.wikimedia.org/${lang}wiki/latest/${lang}wiki-latest-categorylinks.sql.gz | gunzip -c > \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql
 
 \$(SQL_PATH)/${lang}/${lang}.sql: \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql \$(EXE_PATH)/preprocessor
-	\$(EXE_PATH)/preprocessor --categories \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql --category-links \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql --out \$(SQL_PATH)/${lang}/${lang}.sql --language ${lang} \$(PAGE_RANK)
+	\$(EXE_PATH)/preprocessor -p --categories \$(SQL_PATH)/${lang}/${lang}wiki-latest-page.sql --category-links \$(SQL_PATH)/${lang}/${lang}wiki-latest-categorylinks.sql --out \$(SQL_PATH)/${lang}/${lang}.sql --language ${lang} \$(PAGE_RANK)
 
 sqlite_${lang}: \$(SQL_PATH)/${lang}/${lang}.sql
 	cat \$(SQL_PATH)/${lang}/${lang}.sql | sqlite3 \$(SQLITE_FILE)
