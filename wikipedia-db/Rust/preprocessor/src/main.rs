@@ -5,7 +5,7 @@ use std::io::Write;
 use clap::{App, Arg};
 use termion::{color, style};
 
-use preprocessor::{make_sql, run, run_pages, make_page_sql};
+use preprocessor::{make_page_sql, make_sql, run, run_pages};
 
 fn main() {
 	let matches = App::new("Scalling-Potatoes' category preprocessor")
@@ -75,7 +75,7 @@ fn main() {
 				.short("p")
 				.long("pages")
 				.takes_value(false)
-				.help("to do the page_category table")
+				.help("to do the page_category table"),
 		)
 		.get_matches();
 
@@ -115,7 +115,8 @@ fn main() {
 	let pages = matches.is_present("pages");
 
 	println!(
-		"{yellow}{bold}[START]{reset_c}{reset_s}",
+		"{yellow}{bold}[START]{reset_c}{reset_s} ({})",
+		wp,
 		bold = style::Bold,
 		yellow = color::Fg(color::Yellow),
 		reset_c = color::Fg(color::Reset),

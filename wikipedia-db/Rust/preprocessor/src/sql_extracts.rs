@@ -4,10 +4,10 @@ use atomic_counter::{AtomicCounter, RelaxedCounter};
 use rayon::prelude::*;
 
 use crate::algebra::NonZeroCoeff;
-use crate::sql_extracts::categories::category::category_hash::CategoryHash;
 use crate::sql_extracts::categories::category::{AbstractCategory, Category, PageRanked};
+use crate::sql_extracts::categories::category::category_hash::CategoryHash;
 use crate::sql_extracts::categories::category_links::{CategoryCategorySql, CategoryLinks};
-use crate::sql_extracts::categories::page_category_links::{PageCategorySql, PageCategoryLinks};
+use crate::sql_extracts::categories::page_category_links::{PageCategoryLinks, PageCategorySql};
 
 pub mod categories;
 pub mod extractor;
@@ -91,23 +91,20 @@ pub fn to_category_links_vec<'a, C: AbstractCategory + Sync>(
     })
 }
 
-
 /// Get a level higher from the plain sql
 pub fn to_page_category_links_vec<'a, C: AbstractCategory + Sync>(
     categories: &'a CategoryHash<C>,
     category_links: impl ParallelIterator<Item = PageCategorySql> + 'a,
     to_err_counter: &'a RelaxedCounter,
 ) -> impl ParallelIterator<Item = PageCategoryLinks> + 'a {
-    category_links.filter_map(move |c| {
-        match categories.get_by_title(&c.to) {
-            Some(category) => Some(PageCategoryLinks {
-                from: c.from,
-                to: category.get_id(),
-            }),
-            None => {
-                to_err_counter.inc();
-                None
-            }
+    category_links.filter_map(move |c| match categories.get_by_title(&c.to) {
+        Some(category) => Some(PageCategoryLinks {
+            from: c.from,
+            to: category.get_id(),
+        }),
+        None => {
+            to_err_counter.inc();
+            None
         }
     })
 }

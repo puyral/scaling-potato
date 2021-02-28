@@ -1,17 +1,16 @@
 use std::fs::File;
-use std::io;
 use std::io::Write;
+use std::sync::{Arc, Mutex};
 
 use atomic_counter::{AtomicCounter, RelaxedCounter};
 use rayon::prelude::*;
 
-use crate::sql_extracts::categories::category::category_hash::CategoryHash;
+use crate::cli::{only_r, print_done, Printer};
 use crate::sql_extracts::categories::category::{AbstractCategory, Category, PageRanked};
+use crate::sql_extracts::categories::category::category_hash::CategoryHash;
 use crate::sql_extracts::categories::category_links::{CategoryCategorySql, CategoryLinks};
+use crate::sql_extracts::categories::page_category_links::{PageCategoryLinks, PageCategorySql};
 use crate::sql_extracts::extractor::Extractor;
-use crate::sql_extracts::categories::page_category_links::{PageCategorySql, PageCategoryLinks};
-use std::sync::{Mutex, Arc};
-use crate::cli::{print_done, Printer, only_r};
 
 pub mod algebra;
 pub mod cli;
@@ -27,59 +26,59 @@ pub fn run(
 	beta: f64,
 	epsilon: f64,
 ) -> (CategoryHash<Category>, Vec<CategoryLinks>) {
-	let mut categories =
-		print_done("Parsing Categories...", || {
-			let categories: CategoryHash<_> =
-				Extractor::extract_par_iter_file::<Category>(categories_files).collect();
-			let str = format!("{} categories", categories.len());
-			cli::res(categories, Some(str))
-		});
+	let mut categories = print_done("Parsing Categories...", || {
+		let categories: CategoryHash<_> =
+			Extractor::extract_par_iter_file::<Category>(categories_files).collect();
+		let str = format!("{} categories", categories.len());
+		cli::res(categories, Some(str))
+	});
 
-	let category_links: Vec<_> =
-		print_done("Parsing and preprocessing links...", || {
-			let from_err_counter = RelaxedCounter::new(0);
-			let to_err_counter = RelaxedCounter::new(0);
-			let category_links: Vec<_> = sql_extracts::to_category_links_vec(
-				&categories,
-				Extractor::extract_par_iter_file::<CategoryCategorySql>(category_links_file),
-				&from_err_counter,
-				&to_err_counter,
-			).collect();
-			let str = format!("{} links, skipped {} unknown ids (to) and {} unknown titles (from)",
-							  category_links.len(),
-							  to_err_counter.get(),
-							  from_err_counter.get());
-			cli::res(category_links, Some(str))
-		});
+	let category_links: Vec<_> = print_done("Parsing and preprocessing links...", || {
+		let from_err_counter = RelaxedCounter::new(0);
+		let to_err_counter = RelaxedCounter::new(0);
+		let category_links: Vec<_> = sql_extracts::to_category_links_vec(
+			&categories,
+			Extractor::extract_par_iter_file::<CategoryCategorySql>(category_links_file),
+			&from_err_counter,
+			&to_err_counter,
+		)
+			.collect();
+		let str = format!(
+			"{} links, skipped {} unknown titles (to) and {} unknown ids (from)",
+			category_links.len(),
+			to_err_counter.get(),
+			from_err_counter.get()
+		);
+		cli::res(category_links, Some(str))
+	});
 
 	print_done("Calculating degrees...", || {
 		sql_extracts::calculate_degrees(&mut categories, category_links.iter());
 		cli::NONE
 	});
 
-	let (vec, matrix) =
-		print_done("Switching to Algebra...", || {
-			let vec = algebra::lib::make_vec(categories.get_data().par_iter().map(|c| c.get_id()));
-			let matrix =
-				algebra::lib::make_matrix(
-					sql_extracts::calculate_nzc(&categories, &category_links).map(|c| c.to_tuple_calculate()),
-					vec.dim(),
-				);
+	let (vec, matrix) = print_done("Switching to Algebra...", || {
+		let vec = algebra::lib::make_vec(categories.get_data().par_iter().map(|c| c.get_id()));
+		let matrix = algebra::lib::make_matrix(
+			sql_extracts::calculate_nzc(&categories, &category_links)
+				.map(|c| c.to_tuple_calculate()),
+			vec.dim(),
+		);
 
-			cli::only_r((vec, matrix))
-		});
+		cli::only_r((vec, matrix))
+	});
 
 	println!("Pageranking...");
 	let page_rank = algebra::page_rank::page_rank(&matrix, &vec, beta, epsilon);
 
-	let final_category_links: Vec<_> =
-		print_done("Extracting results...", || {
-			cli::only_r(sql_extracts::collect_pr(
-				&mut categories,
-				category_links.par_iter(),
-				page_rank.iter().map(|(id, value)| (id as u32, value)),
-			))
-		}).collect();
+	let final_category_links: Vec<_> = print_done("Extracting results...", || {
+		cli::only_r(sql_extracts::collect_pr(
+			&mut categories,
+			category_links.par_iter(),
+			page_rank.iter().map(|(id, value)| (id as u32, value)),
+		))
+	})
+		.collect();
 
 	let out_category_links = print_done("Finalizing...", || {
 		let mut out_category_links = Vec::with_capacity(final_category_links.len());
@@ -95,18 +94,20 @@ pub fn run_pages(
 	categories: &CategoryHash<Category>,
 	category_links_file: File,
 ) -> Vec<PageCategoryLinks> {
-
-	print_done("\tParsing and preprocessing page links...", || {
+	print_done("Parsing and preprocessing page links...", || {
 		let to_err_counter = RelaxedCounter::new(0);
 		let page_category_links: Vec<_> = sql_extracts::to_page_category_links_vec(
 			&categories,
 			Extractor::extract_par_iter_file::<PageCategorySql>(category_links_file),
 			&to_err_counter,
-		).collect();
+		)
+			.collect();
 
-		let str = format!("{} links, skipped  {} unknown titles (to)",
-						  page_category_links.len(),
-						  to_err_counter.get());
+		let str = format!(
+			"{} links, skipped  {} unknown titles (to)",
+			page_category_links.len(),
+			to_err_counter.get()
+		);
 		Printer {
 			result: page_category_links,
 			description: Some(str),
@@ -201,23 +202,29 @@ pub fn make_page_sql(
 
 	print_done("\tcreating table...", || {
 		// make the table
-		output.write(format!(
-			"BEGIN;
+		output
+			.write(
+				format!(
+					"BEGIN;
 		DROP TABLE IF EXISTS `{wiki_name}-page-category`;
 		CREATE TABLE `{wiki_name}-page-category` (
 			`from_id` INTEGER NOT NULL,
 			`to_id` INTEGER NOT NULL,
 			FOREIGN KEY(`to_id`) REFERENCES `{wiki_name}-categories`(`id`)
 		);\n",
-			wiki_name = wp_code
-		).as_bytes()).expect("couldn't write");
+					wiki_name = wp_code
+				)
+					.as_bytes(),
+			)
+			.expect("couldn't write");
 		cli::NONE
 	});
 
 	// the rich man's multithreading :)
 	let arc_m = Arc::new(Mutex::new(output));
-	print_done("\twriting...", || {
-		page_category_links.par_chunks(10000).for_each(|pcl| {
+	let chunk_size = 10000;
+	print_done(&format!("\twriting by groups of {}...", chunk_size), || {
+		page_category_links.par_chunks(chunk_size).for_each(|pcl| {
 			let mut tmp = String::new();
 			pcl.iter().for_each(|pc| {
 				tmp.push_str(&*format!(
@@ -230,6 +237,12 @@ pub fn make_page_sql(
 			let mut file = arc_m.lock().expect("unable to lock...");
 			file.write(tmp.as_bytes()).expect("unable to write...");
 		});
+
+		// finalize commit
+		let mut file = arc_m.lock().expect("unable to lock...");
+		file.write("COMMIT;".as_bytes())
+			.expect("unable to write...");
+
 		cli::NONE
 	});
 }
