@@ -19,3 +19,7 @@ The `xml` files tells which dumps are currently downloaded (those are followed b
 
   - https://en.wikipedia.org/wiki/Help:User_contributions
   - https://www.mediawiki.org/wiki/Manual:Categorylinks_table
+
+# Results
+
+The preprocessed database for `de`, `en`, `eo`, `es`, `fr` and `it` is available [here](https://lufi.rezel.net/r/FNG9Hz9M0v#+j1rtpsQvFM6QLh9cWlU2iCzhKLcwBPiaGtFBO5D4V4=)
