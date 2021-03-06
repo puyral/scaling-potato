@@ -1,7 +1,7 @@
 pub mod category;
-mod page;
 mod link;
+mod page;
 
-pub trait Entry{
-	fn get_id(&self) -> u32;
+pub trait Entry {
+    fn get_id(&self) -> u32;
 }
