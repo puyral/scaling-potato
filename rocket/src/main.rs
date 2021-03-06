@@ -38,6 +38,6 @@ fn main() {
 		.attach(Db::fairing())
 		.manage(CategoryHash::generate(Connection::open("db.sqlite").unwrap()))
 		.mount("/", routes![index])
-		.mount("/api", routes![api::simple_category_get, api::simple_page_get])
+		.mount("/api", routes![api::simple_category_get, api::simple_page_get, api::categories_post])
 		.launch();
 }

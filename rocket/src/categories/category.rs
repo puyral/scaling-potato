@@ -26,38 +26,38 @@ impl Category {
 }
 
 #[derive(Debug)]
-pub struct ScoredCategory<'a> {
+pub struct WeightedCategory<'a> {
 	category: &'a Category,
-	score: f64,
+	weight: f64,
 }
 
-impl<'a> ScoredCategory<'a> {
+impl<'a> WeightedCategory<'a> {
 	pub fn get_category(&self) -> &'a Category {
 		self.category
 	}
 
-	pub fn get_score(&self) -> f64 {
-		self.score
+	pub fn get_weight(&self) -> f64 {
+		self.weight
 	}
 
-	pub fn set_score(&mut self, score: f64) {
-		self.score = score;
+	pub fn set_weight(&mut self, weight: f64) {
+		self.weight = weight;
 	}
 
-	pub fn new(category: &'a Category, score: f64) -> Self {
-		ScoredCategory { category, score }
+	pub fn new(category: &'a Category, weight: f64) -> Self {
+		WeightedCategory { category, weight }
 	}
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ScoredCategoryNoRef {
+pub struct WeightedCategoryNoRef {
 	category: Category,
-	score: f64,
+	weight: f64,
 }
 
-impl ScoredCategoryNoRef {
-	pub fn new(sc: &ScoredCategory<'_>) -> ScoredCategoryNoRef {
-		ScoredCategoryNoRef { category: sc.category.copy(), score: sc.score }
+impl WeightedCategoryNoRef {
+	pub fn new(sc: &WeightedCategory<'_>) -> WeightedCategoryNoRef {
+		WeightedCategoryNoRef { category: sc.category.copy(), weight: sc.weight }
 	}
 }
 
@@ -67,14 +67,14 @@ impl Entry for Category {
 	}
 }
 
-impl<'a> Entry for ScoredCategory<'a> {
+impl<'a> Entry for WeightedCategory<'a> {
 	fn get_id(&self) -> u32 {
 		self.category.get_id()
 	}
 }
 
-impl<'a> AddAssign<f64> for ScoredCategory<'a> {
+impl<'a> AddAssign<f64> for WeightedCategory<'a> {
 	fn add_assign(&mut self, rhs: f64) {
-		self.score += rhs;
+		self.weight += rhs;
 	}
 }
