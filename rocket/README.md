@@ -10,6 +10,8 @@ Don't forget to set rust to `nighly` thus :
 rustup override set nightly
 ```
 
+You need `sqlite3` and `libsqlite3-dev` installed
+
 You can start the server with
 ```bash
 cargo run --release
