@@ -2,3 +2,7 @@
 **/*.sql
 **/*.gz-rss
 **/*.gz
+**/.idea/*
+**/target/*
+**/Makefile
+**/*.sqlite
