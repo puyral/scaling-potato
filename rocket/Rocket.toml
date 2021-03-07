@@ -2,7 +2,7 @@
 db = { url = "../wikipedia-db/db.sqlite" }
 
 [global]
-assets_dir = "../html"
+assets_dir = "../html/assets"
 template_dir = "../html"
 
 [development]
