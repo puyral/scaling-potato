@@ -8,6 +8,9 @@ extern crate rocket_contrib;
 
 use std::collections::HashMap;
 
+use rocket::{Request, Response};
+use rocket::fairing::{Fairing, Info, Kind};
+use rocket::http::Header;
 use rocket::response::NamedFile;
 use rocket_contrib::databases::rusqlite;
 use rocket_contrib::databases::rusqlite::Connection;
@@ -36,6 +39,24 @@ fn dump_db()-> Option<NamedFile>{
     NamedFile::open(DB_LOCATION).ok()
 }
 
+pub struct CORS();
+
+impl Fairing for CORS {
+    fn info(&self) -> Info {
+        Info {
+            name: "Add CORS headers to requests",
+            kind: Kind::Response
+        }
+    }
+
+    fn on_response(&self, request: &Request, response: &mut Response) {
+        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Methods", "POST, GET, PATCH, OPTIONS"));
+        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    }
+}
+
 fn main() {
     rocket::ignite()
         .attach(Db::fairing())
@@ -52,5 +73,9 @@ fn main() {
                 api::simple_category_get_title
             ],
         )
+
+        // CORS
+        .attach(CORS())
+
         .launch();
 }
