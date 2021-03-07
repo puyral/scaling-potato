@@ -307,7 +307,7 @@ function changeThings(usersName,language,nbMonths){ /*To update with the value t
                     var limit = 3;
                     
                     var xhr = new XMLHttpRequest();
-                    xhr.open("POST", 'http://scaling-potatoes.ml/api/'+language+'/category?limit='+limit, true);
+                    xhr.open("POST", 'http://puyral.ml:8000/api/'+language+'/category?limit='+limit, true);
 
                     //Envoie les informations du header adaptées avec la requête
                     xhr.setRequestHeader("Content-Type", "application/json");
