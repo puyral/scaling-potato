@@ -666,7 +666,7 @@
                 var jsonServeur = [];
                 var group ={};
                 var correspondance = []
-                var blockCategories = [];
+                
                 /*var dictLengthCategoriesDifferentLanguage = {
 
                     als : 10;
@@ -695,7 +695,7 @@
                                 var mot = cat.title.substring(index+1,cat.title.length);
                                 categ += mot + " </br>" ; /* We add the categories*/
 
-                                correspondance.push(mot);
+                                correspondance.push(cat.title);
                                 blockCategories.push(p);
 
                             }
@@ -719,11 +719,7 @@
                     }
                 }
 
-                group["categories"] = blockCategories;
-                group["weight"] = 1;  /* By default. For now*/
-
-                console.log(group);
-                console.log(correspondance);
+                
                 URLindexListe = getURLindexpage(language,correspondance);
                 console.log(URLindexListe);
 
@@ -736,17 +732,55 @@
                         console.log(resp3);
 
                         correspondanceIdNom = {}
+                        var blockCategories = [];
+
 
                         for (var u in resp3){
 
                             page = resp3[u].query.pages
                             for (var i in page){
                                 correspondanceIdNom[page[i].title]=page[i].pageid;
+                                blockCategories.push(page[i].pageid);
                             }
-
                         }
 
                         console.log(correspondanceIdNom);
+
+
+                        group["categories"] = blockCategories;
+                        group["weight"] = 1;  /* By default. For now*/
+
+                        console.log(group);
+                        console.log(correspondance);
+                        
+
+
+
+
+
+                        /* ON APPEL LE SERVER ET ON REÇOIT NOTRE DEMANDE */
+
+
+
+
+
+                       /* var xhr = new XMLHttpRequest();
+                        xhr.open("POST", '/server', true);
+
+                        //Envoie les informations du header adaptées avec la requête
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                        xhr.onreadystatechange = function() { //Appelle une fonction au changement d'état.
+                            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                        // Requête finie, traitement ici.
+                            }
+                        }
+                        xhr.send("foo=bar&lorem=ipsum");
+                        // xhr.send(new Int8Array());
+                        // xhr.send(document);
+                            */
+
+
                         var sortedpageViews = pageViews.sort(function(a,b){   /*We sort the contribution by the absolute value of delta size. */
                             if (a[2] < b[2] ){ return 1; } 
                             if (b[2] < a[2] ) { return -1;}
