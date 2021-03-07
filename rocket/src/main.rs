@@ -8,12 +8,11 @@ extern crate rocket_contrib;
 
 use std::collections::HashMap;
 
-use rocket::{Request, Response};
-use rocket::fairing::{Fairing, Info, Kind};
-use rocket::http::Header;
+use rocket::http::Method;
 use rocket::response::NamedFile;
 use rocket_contrib::databases::rusqlite;
 use rocket_contrib::databases::rusqlite::Connection;
+use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 use crate::categories::category::category_hash::CategoryHash;
 
@@ -39,25 +38,20 @@ fn dump_db()-> Option<NamedFile>{
     NamedFile::open(DB_LOCATION).ok()
 }
 
-pub struct CORS();
-
-impl Fairing for CORS {
-    fn info(&self) -> Info {
-        Info {
-            name: "Add CORS headers to requests",
-            kind: Kind::Response
-        }
-    }
-
-    fn on_response(&self, request: &Request, response: &mut Response) {
-        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
-        response.set_header(Header::new("Access-Control-Allow-Methods", "POST, GET, PATCH, OPTIONS"));
-        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
-        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
-    }
-}
 
 fn main() {
+    let allowed_origins = AllowedOrigins::All;
+
+    // You can also deserialize this
+    let cors = rocket_cors::CorsOptions {
+        allowed_origins,
+        allowed_methods: vec![Method::Get,Method::Post].into_iter().map(From::from).collect(),
+        allowed_headers: AllowedHeaders::All,
+        allow_credentials: true,
+        ..Default::default()
+    }
+        .to_cors().unwrap();
+
     rocket::ignite()
         .attach(Db::fairing())
         .manage(CategoryHash::generate(
@@ -75,7 +69,7 @@ fn main() {
         )
 
         // CORS
-        .attach(CORS())
+        .attach(cors)
 
         .launch();
 }
