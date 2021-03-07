@@ -53,7 +53,7 @@ impl CategoryHash {
             .map(|wp| wp.unwrap())
             .map(|wp: String| {
                 let mut smt = conn
-                    .prepare(&*format!("select * from `{}-categories`;", &wp))
+                    .prepare(&*format!("select `id`, `page_rank` from `{}-categories`;", &wp))
                     .expect("error while preparing the query");
                 let categories = smt
                     .query_map(&[], |row| Category {
@@ -64,7 +64,7 @@ impl CategoryHash {
                     .map(|c| c.expect("unable to create category"));
 
                 let mut smt = conn
-                    .prepare(&*format!("select * from `{}-category-category`;", &wp))
+                    .prepare(&*format!("select `from_id`,`to_id` from `{}-category-category`;", &wp))
                     .expect("error while preparing the query");
                 let links = smt
                     .query_map(&[], |row| Link {

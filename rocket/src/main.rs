@@ -39,8 +39,9 @@ fn main() {
             "/api",
             routes![
                 api::simple_category_get,
-                api::simple_page_get,
-                api::categories_post
+                //api::simple_page_get,
+                api::categories_post,
+                api::simple_category_get_title
             ],
         )
         .launch();

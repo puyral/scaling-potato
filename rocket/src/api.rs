@@ -33,6 +33,39 @@ pub fn simple_category_get(
     )
 }
 
+#[get("/<wp>/category?<title>&<weight>&<limit>", rank = 2)]
+pub fn simple_category_get_title(
+    categories: State<Categories>,
+    wp: String,
+    title: String,
+    conn: Db,
+    limit: Option<usize>,
+    weight: Option<usize>,
+) -> Option<Json<crate::result::ResultJSON>> {
+    let category_hash = categories.inner().get(&wp)?;
+
+    let mut smt = conn
+        .prepare(&*format!(
+            "select id from `{}-categories` where name='{}';",
+            &wp, title
+        ))
+        .ok()?;
+    let category = smt
+        .query_map(&[], |row| category_hash.get(row.get(0)))
+        .ok()?
+        .flat_map(|c| c.ok()?).next()?;
+
+    let top = category_hash.build_top_categories_intern(std::iter::once(category));
+
+    let weight = weight.unwrap_or(1);
+    Some(
+        top.iter()
+            .map(|&c| WeightedCategory::new(c, weight))
+            .collect::<crate::result::Result>()
+            .to_json(limit),
+    )
+}
+
 #[post("/<wp>/category?<limit>", data = "<data>")]
 pub fn categories_post(
     categories: State<Categories>,
