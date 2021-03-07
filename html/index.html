@@ -25,8 +25,8 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
+        <script src="https://cdn.anychart.com/releases/v8/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/v8/js/anychart-cartesian.min.js"></script>
 
 
     </head>
@@ -151,12 +151,9 @@
            <img src="{{ assets }}/Loading.gif" alt="Loading" title="A moment please!">
         </div>
 
-        <table class= "columns">
-            <tr>
-                <td><div id="barchart_div" style = "border: 1px solid #ccc"></div></td>
-            </tr>
-        </table>
-
+        <div id = Graphic > 
+            <canvas id="container"  style ="height: 400px;">
+            </canvas>
         </div>
         <div class="row mt-3" id ="Titre">
         </div>
@@ -475,7 +472,8 @@
         document.getElementById("registration").innerHTML ="<strong> Registration date </strong>";
         document.getElementById("emailable").innerHTML ="<strong> Email, if informed </strong> ";
 */
-    
+        document.getElementById("Graphic").innerHTML = '<div id="container"  style ="height: 400px;"></div>';
+        /*document.getElementById("container")*/
         document.getElementById("Loading").hidden = false;
         var url = "https://"+ language+ ".wikipedia.org/w/api.php"; 
         var params = {
@@ -543,14 +541,21 @@
             var usersC = [];
             var number = 0;
             var actionByMonths = [];
-
+            var data = {}
+            var actionByMonths2 = [];
             /* In this part I group and divide the different pages in blocks to be send to the server. Each of them have to be of a size < 50 to be accepted. */
 
             for (i=0;i<numberMonths;i++){
                 K = resp[i].query.usercontribs;
                 usercontribs[i] = K;
-                actionByMonths.push([lTimeStamp[i].substring(0,10),K.length]);
-                for (var u in K){
+                var temp = {};
+
+                actionByMonths.push([lTimeStamp[i].substring(0,10), K.length])
+                /*temp["x"] = lTimeStamp[i].substring(0,10);
+                temp["y"] =  K.length;
+                actionByMonths.push(temp);*/
+                actionByMonths2.push(K.length)
+;                for (var u in K){
 
                     usersC[number] = K[u];
                     number+=1;
@@ -599,30 +604,26 @@
             plateau.push(NumberQueries);
             var separation = Partition .length;
 
-            /*google.charts.load('current', {packages: ['corechart']});*/
-            /*google.load('visualization', 'current', { packages: ['corechart', 'controls'] });
-            google.charts.setOnLoadCallback(drawChart);
+  
+            console.log(actionByMonths2)
 
+            /*var data = [
+                    {x: 'Amazon', y: 120},
+                    {x: 'DZone', y: 60},
+                    {x: 'Gizmodo', y: 30},
+                    {x: 'StackOverFlow', y: 80},
+                    {x: 'CNET', y: 50}
+                ];
+            */
+            var chart = anychart.column();
+            chart.title("Evolution of the quantity of modification made by the users");
+            chart.xAxis().title("Months");
+            chart.yAxis().title("Nomber of modification");
+            var series = chart.column(actionByMonths);
+            chart.container("container");
+            chart.draw();
+          
 
-            function drawChart() {
-
-                var data = new google.visualization.DataTable();
-                data.addColumn('string', 'Months');
-                data.addColumn('number', 'Number of Queries');
-                data.addRows(actionByMonths);
-            }
-            
-
-
-            
-
-            var barchart_options = {title:'Evolution of the number of action of the users',
-                       width:400,
-                       height:300,
-                       legend: 'none'};
-            var barchart = new google.visualization.BarChart(document.getElementById('barchart_div'));
-            barchart.draw(data, barchart_options);
-*/
             console.log(actionByMonths);
 
             var usersC = usersC.sort(function(a,b){   /*We sort the contribution by the absolute value of delta size. */
@@ -763,15 +764,18 @@
 
 
                         var limit = 3;
-
+                        
                        var xhr = new XMLHttpRequest();
-                        xhr.open("POST", 'scaling-potatoes.ml/api/<'+language+'>/category?limit='+limit, true);
+                        xhr.open("POST", 'http://scaling-potatoes.ml/api/<'+language+'>/category?limit='+limit, true);
 
                         //Envoie les informations du header adaptées avec la requête
                         xhr.setRequestHeader("Content-Type", "application/json");
 
                         xhr.onreadystatechange = function() { //Appelle une fonction au changement d'état.
                             if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+
+
+                                console.log("WHOA");
                         // Requête finie, traitement ici.
                             }
                         }
@@ -792,7 +796,7 @@
 
 
 
-                            
+
 
 
                         var sortedpageViews = pageViews.sort(function(a,b){   /*We sort the contribution by the absolute value of delta size. */
