@@ -1,2 +1,2 @@
 [global.databases]
-db = { url = "db.sqlite" }
+db = { url = "../wikipedia-db/db.sqlite" }

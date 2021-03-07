@@ -32,7 +32,7 @@ fn main() {
     rocket::ignite()
         .attach(Db::fairing())
         .manage(CategoryHash::generate(
-            Connection::open("db.sqlite").unwrap(),
+            Connection::open("../wikipedia-db/db.sqlite").unwrap(),
         ))
         .mount("/", routes![index])
         .mount(
