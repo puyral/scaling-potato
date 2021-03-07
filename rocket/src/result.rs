@@ -37,22 +37,22 @@ impl<'a> Result<'a> {
 
         match limit {
             None => Json(tmp),
-            Some(l) => {
-                let mut i = 0;
-                let n = tmp.len();
+            Some(l ) => {
+                let mut i: isize = 0;
+                let n = tmp.len() as isize;
 
                 if n == 0 {
                     return Json(tmp);
                 }
 
                 let old_weight = tmp[0].weight();
-                while (i < n) && (old_weight == tmp[1].weight()) {
+                while (i < n) && (old_weight == tmp[i as usize].weight()) {
                     i += 1;
                 }
-                let b = min(n, i + l);
-                let a = max(0, b - l);
+                let b = min(n, i + (l as isize));
+                let a = max(0, b - (l as isize));
 
-                return Json(tmp[a..b].to_vec());
+                return Json(tmp[(a as usize)..(b as usize)].to_vec());
             }
         }
     }
