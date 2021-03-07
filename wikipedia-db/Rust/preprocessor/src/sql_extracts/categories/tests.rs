@@ -13,7 +13,7 @@ fn extract_categories_iter() -> () {
     let v = Vec::from_iter(
         Extractor::new::<Category>()
             .expect("Something went wrong building the regexp")
-            .extract_iter::<Category>(&text),
+            .extract_iter::<Category>(&text.as_bytes()),
     );
     // println!("assert_eq!({:?},v[89]);\nassert_eq!({:?},v[7]);\nassert_eq!({:?},v[120]);\nassert_eq!({},v.len());",v[89],v[7],v[120],v.len());
     // assert_eq!(Category { id: 6106, title: "Ûrope".parse().unwrap() }, v[89]);
@@ -30,7 +30,7 @@ fn extract_links() -> () {
     let v = Vec::from_iter(
         Extractor::new::<CategoryCategorySql>()
             .unwrap()
-            .extract_iter::<CategoryCategorySql>(&text_links),
+            .extract_iter::<CategoryCategorySql>(&text_links.as_bytes()),
     );
 
     assert_eq!(

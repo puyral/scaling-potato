@@ -11,6 +11,7 @@ use crate::sql_extracts::categories::category::category_hash::CategoryHash;
 use crate::sql_extracts::categories::category_links::{CategoryCategorySql, CategoryLinks};
 use crate::sql_extracts::categories::page_category_links::{PageCategoryLinks, PageCategorySql};
 use crate::sql_extracts::extractor::Extractor;
+use regex::Regex;
 
 pub mod algebra;
 pub mod cli;
@@ -133,6 +134,7 @@ pub fn make_sql(
 			"BEGIN;
 		DROP TABLE IF EXISTS `{wiki_name}-categories`;
 		CREATE TABLE `{wiki_name}-categories` (
+			`name` VARCHAR NOT NULL,
 			`id` INTEGER NOT NULL PRIMARY KEY,
 			`page_rank` REAL NOT NULL
 		);
@@ -158,10 +160,11 @@ pub fn make_sql(
 			s.spawn(|_| {
 				categories.iter().for_each(|c| {
 					categories_str.push_str(&*format!(
-						"INSERT INTO `{wiki_name}-categories` VALUES ({id}, {page_rank});\n",
+						"INSERT INTO `{wiki_name}-categories` VALUES ('{name}', {id}, {page_rank});\n",
 						wiki_name = wp_code,
 						id = c.get_id(),
-						page_rank = c.get_pr()
+						page_rank = c.get_pr(),
+						name = prepare(c.get_title())
 					))
 				});
 			});
@@ -245,4 +248,18 @@ pub fn make_page_sql(
 
 		cli::NONE
 	});
+}
+
+fn prepare(title: &str) -> String {
+	title.replace("\\", "").replace("'", "''")
+}
+
+#[cfg(test)]
+mod tests_local{
+
+	#[test]
+	fn replace(){
+
+		println!("{}",crate::prepare("this \\\" is ' a test"))
+	}
 }
