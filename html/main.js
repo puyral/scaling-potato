@@ -301,7 +301,7 @@ function changeThings(usersName,language,nbMonths){ /*To update with the value t
 
 
                     /* ON APPEL LE SERVER ET ON REÇOIT NOTRE DEMANDE */
-
+                    console.log(" ---------------               ///////////////////                    ----------------");
                     console.log(jsonServeur);
 
                     var limit = 3;
