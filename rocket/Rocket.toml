@@ -1,0 +1,15 @@
+[global.databases]
+db = { url = "../wikipedia-db/db.sqlite" }
+
+[global]
+assets_dir = "../html"
+template_dir = "../html"
+
+[development]
+domain = "http://localhost:8000"
+
+[staging]
+domain = "http://puyral.ml:8000"
+
+[production]
+assets_dir = "https://scaling-potato.ml"
