@@ -1,175 +1,165 @@
-
 <!DOCTYPE html>
 <html>
-  <head>
-      <title>Wiki Users Info</title>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <style>
-          .custom-line{
-              min-height: 5rem;
-              margin-bottom: 1rem;
-              background-color: RGBa(60,240,160,0.7); /*Vert*/
-          }
-          .custom-line > .col{
-              background-color: RGBa(60,120,240,0.7); /*Bleu*/
-          }
-          .example {
-              text-align: center;
-              text-align: justify;
-          }
 
-      </style>
-      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-      <script src="https://cdn.anychart.com/releases/v8/js/anychart-core.min.js"></script>
-<script src="https://cdn.anychart.com/releases/v8/js/anychart-cartesian.min.js"></script>
+<head>
+    <title>Wiki Users Info</title>
 
 
-  </head>
-  <body>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-<script src="main.js"></script>
-<script src="functions.js"></script>
-  <!-- Optional JavaScript -->
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-core.min.js"></script>
 
-      <!--Les classes bg-info et mb-3 servent à appliquer un fond bleu et une marge extérieure basse de 
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-cartesian.min.js"></script>
+
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <script src="main.js"></script>
+    <script src="functions.js"></script>
+    <!-- Optional JavaScript -->
+
+    <!--Les classes bg-info et mb-3 servent à appliquer un fond bleu et une marge extérieure basse de 
        taille moyenne au div-->
 
-      <!--La classe border ajoute des bordures grises autour de l'élément--> <div class="container " >
-          
-           <div class="container ">
-         <!--Les classes .p-3 et .mb-2 servent simplement à définir un 
-         padding et une marge extérieure basse pour séparer nos divs.
-         La classe border permet d'ajouter des bordures-->
+    <!--La classe border ajoute des bordures grises autour de l'élément-->
 
-      <h1>Get all the users info</h1>
+    <div id=main_container class="mcontainer">
+        <header class="box_container">
+            <h1>Get all the users info</h1>
+            <p class="tagline" style="text-align: center;">
+                Research now the pseudo of a wikipedia users to get all his profile
+            </p>
+        </header>
 
+    </div>
 
+    <div style="overflow: hidden;">
+        <div class="box_container" id="floating_left">
+            <table >
+                <tr>
+                    <th>
+                        <label>Users Name:</label>
+                        <input type="text" class="form-control" id="usersName" placeholder="A3nm">
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <label>Language?</label>
+                        <input type="text" class="form-control" id="language" placeholder="fr">
+                    </th>
+                </tr>
+                <tr>
+                    <th>
+                        <label>Number of months?</label>
+                        <input type="text" class="form-control" id="nbMonths" placeholder="24">
+                    </th>
 
+                </tr>
+            </table>
+                <button type="button" class="btn btn-success mb-2" onclick="document.getElementById('floating_right').hidden = false; getValue();" id="go_button">Go
+                    !</button>
+        </div>
+        <table class="box_container" style="float:right;" hidden=true id="floating_right">
+            <tr class="header-table-tl">
+                <th class="header-table-tl">
+                    <h2>User's name</h2>
+                </th>
+                <th class="header-table-tr">
+                    <h2>User's groups</h2>
+                </th>
+            </tr>
+            <tr class="header-table-l">
+                <th id="name" class="header-table-l">
+                </th>
 
-          <div class= "row border">
-              
-              <form>
-              <fieldset>
-              <legend>Research now the pseudo of a wikipedia users to get all his profile.</legend>
-              </fieldset>
-              </form>
+                <th id="groups" class="header-table-r">
+                </th>
+            </tr>
+            <tr class="header-table-l">
+                <th class="header-table-l">
+                    <h2>Edits count</h2>
+                </th>
+                <th class="header-table-r">
+                    <h2>Registration date</h2>
+                </th>
+            </tr>
+            <tr class="header-table-l">
+                <th id="editcount" class="header-table-l">
+                </th>
 
-          </div>
+                <th id="registration" class="header-table-r">
+                </th>
+            </tr>
+            <tr class="header-table-l">
+                <th class="header-table-l">
+                    <h2>Email, if informed:</h2>
+                </th>
+                <th class="header-table-r">
+                    <h2>Last modification:</h2>
+                </th>
+            </tr>
+            <tr class="header-table-br">
+                <th id="emailable" class="header-table-br">
+                </th>
 
-          <div class='row '> 
-              <div class='col-4 bg-info' >
-                  <div class="form-group">
-                      <label >Users Name : </label>
-                      <input type="text" class="form-control" id="usersName" value="A3nm">
-                  </div>
-              </div>
-              <div class='col-1 bg-white border' > 
-              </div>
-
-              <div class='col-md bg-info border border-right-0' >
-                  <div class='row example border border-right-0' >
-                     <strong> Users Name </strong>
-                  </div>
-                  <div class='row example' id = "name">
-                     
-                 </div>
-              </div>
-              <div class='col-md bg-info border border-right-0' >
-                  <div class='row example border border-right-0'>
-                      <strong>User's groups  </strong> 
-                  </div>
-                  <div class='row example ' id = "groups">
-                  </div>
-              </div>
-           </div>
-           <div class='row '> 
-              <div class='col-4 bg-info' >
-                  <div class="form-group">
-                      <label >Language?</label>
-                      <input type="text" class="form-control" id="language" value="fr"placeholder="fr">
-                  </div>
-              </div>
-              <div class='col-1 bg-white' > 
-              </div>
-              <div class='col-md bg-info border border-right-0' >
-                  <div class='row example border border-right-0' >
-                      <strong>Edits count </strong> 
-                  </div>
-                  <div class='row example ' id = "editcount">
-                      
-                  </div> 
-              </div>
-              <div class='col-md bg-info border border-right-0' >
-                  <div class='row example border border-right-0' >
-                      <strong> Registration Date </strong> 
-                  </div> 
-                   <div class='row example ' id = "registration">
-                  
-                  </div> 
-              </div>
-           </div>
-           <div class='row '> 
-              <div class='col-4 bg-info' >
-                   <div class="form-group">
-                 <label >Number of months?</label>
-                 <input type="text" class="form-control" id="nbMonths" value="24" placeholder="24">
-               </div>
-              </div>
-              <div class='col-1 bg-white' > </div>
-              <div class='col-md bg-info border border-right-0' >
-                  <div class='row example border border-right-0' >
-                  <strong>Email, if informed : </strong>
-                  </div>
-                  <div class='row example' id = "emailable">
-                  
-                  </div>
-              </div>
-              <div class='col-md bg-info border border-right-0' >
-                  <div class='row example border border-right-0' >
-                   <strong>Last modification : </strong> 
-                  </div>
-                  <div class='row example' id ="latestcontrib">
-                   
-                  </div>    
-              </div>
-          </div>
-          <div class='row'> 
-              <button type="button" class ="btn btn-success mb-2" onclick="getValue();">Go !</button>
-          </div>
+                <th id="latestcontrib" class="header-table-bl">
+                </th>
+            </tr>
+        </table>
+    </div>
 
 
-          <!-- All the queries he did  -->
 
-          <!--<p id="infoE"></p> -->
-      <div class="row mt-3" id ="Loading" hidden = true>
-          
-         <img src="{{ assets }}/Loading.gif" alt="Loading" title="A moment please!">
-      </div>
 
-      <div id = Graphic > 
-          <canvas id="container"  style ="height: 400px;">
-          </canvas>
-      </div>
-      <div class="row mt-3" id ="Titre">
-      </div>
-      <div class="row mt-3" id ="displayInfo">
-          <div class='col-3 bg-white' id=titleInfo > 
-          </div>
+    <div class="container ">
 
-          <div class='col bg-white' id=infoQueries > 
-          </div>
+        <div class="container ">
 
-      </div>
 
-      <div class="container mt-3" id = "tab">
 
-      </div>
+            <!-- All the queries he did  -->
 
-  </div>
-  </body>
+            <!--<p id="infoE"></p> -->
+            <div class="row mt-3" id="Loading" hidden=true>
+
+                <img src="{{ assets }}/Loading.gif" alt="Loading" title="A moment please!">
+            </div>
+
+            <div id=Graphic>
+                <canvas id="container" style="height: 400px;">
+                </canvas>
+            </div>
+            <div class="row mt-3" id="Titre">
+            </div>
+            <div class="row mt-3" id="displayInfo">
+                <div class='col-3 bg-white' id=titleInfo>
+                </div>
+
+                <div class='col bg-white' id=infoQueries>
+                </div>
+
+            </div>
+
+            <div class="container mt-3" id="tab">
+
+            </div>
+
+        </div>
+</body>
+
 </html>
