@@ -17,6 +17,10 @@ use rocket_contrib::databases::rusqlite::Connection;
 
 
 use crate::categories::category::category_hash::CategoryHash;
+use rocket_contrib::templates::Template;
+use rocket::fairing::AdHoc;
+use rocket_cors::{AllowedHeaders, AllowedOrigins};
+use rocket::http::Method;
 
 pub mod api;
 pub mod categories;
@@ -36,7 +40,7 @@ const DB_LOCATION: &str = "../wikipedia-db/db.sqlite";
 fn index(domain: State<Domain>) -> Template {
     let mut context = HashMap::new();
     context.insert("assets", domain.0.to_owned()+"/assets");
-    // context.insert("domain", domain.0.to_owned());
+    context.insert("domain", domain.0.to_owned());
     Template::render("index", &context)
 }
 
