@@ -5,11 +5,7 @@
 
 function changeThings(usersName,language,nbMonths){ /*To update with the value that we get from the input*/
 
-   
-    /*  WE CREATE THE GRAPHIC, AND WE LAUNCH LOADING IMAGE*/
 
-
-    document.getElementById("Graphic").innerHTML = '<div id="container"  style ="height: 400px;"></div>';
     /*document.getElementById("container")*/
     document.getElementById("Loading").hidden = false;
 
@@ -72,13 +68,28 @@ function changeThings(usersName,language,nbMonths){ /*To update with the value t
         
 
 
-        document.getElementById("tab").innerHTML = "<div class='row'><button type='button' class ='btn btn-success mb-2' onclick= "+'" displayValue(innerTab);"'+">Display all the last queries of the users </button> </div>";
-        document.getElementById("tab").innerHTML += "<div class='row' > <div class='col-2 bg-primary' > <strong>Page</strong> </div> <div class='col-2 bg-primary' > <strong>Jour de l'édit </strong> </div> <div class='col-1 bg-primary' ><strong> DeltaSize </strong> </div> <div class='col-7 bg-primary' > <strong>Categories</strong>  </div></div><div class = 'container' id ='innerTab' hidden = true></div>";
-        /*definition of many empty variables to be define later*/
-        
 
+         //document.getElementById("tab").innerHTML = "<div class='row'><button type='button' class ='btn btn-success mb-2' onclick= "+'" displayValue(innerTab);"'+">Display all the last queries of the users </button> </div>";
+        //document.getElementById("tab").innerHTML += "<div class='row' > <div class='col-2 bg-primary' > <strong>Page</strong> </div> <div class='col-2 bg-primary' > <strong>Jour de l'édit </strong> </div> <div class='col-1 bg-primary' ><strong> DeltaSize </strong> </div> <div class='col-7 bg-primary' > <strong>Categories</strong>  </div></div>";
 
-        /*  THIRD REQUEST : FOR EACH CONTRIBUTION WE WANT TO GET THE CATEGORIES*/
+        document.getElementById("tab").innerHTML = 
+            `<p id="category_tab_switcher_p">
+                <a 
+                    id="category_tab_switcher" 
+                    onclick="hide_show_categories();">
+                    ˅˅ Show all the last edits ˅˅
+                </a>
+            </p>
+            <table id ='innerTab' hidden = true>
+                <tr>
+                    <th style="border-radius: 6px 0px 0px 0px;">Page</th>
+                    <th>Day</th>
+                    <th>Size</th>
+                    <th style="border-radius: 0px 6px 0px 0px;">Categories</th>
+                </tr>
+            </table>
+
+            `
 
         var usercontribs = {};
         var NumberQueries = 0;
@@ -234,7 +245,7 @@ function changeThings(usersName,language,nbMonths){ /*To update with the value t
                     } catch(TypeError) {
                         categ = "";
                     }
-                    try {
+                    try {status
                         key = Object.keys(pages[p].pageviews);
                         LpageV = pages[p].pageviews;
                         var A = getAverage(LpageV,key);
@@ -284,6 +295,7 @@ function changeThings(usersName,language,nbMonths){ /*To update with the value t
                     
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", 'http://puyral.ml:8000/api/'+language+'/category?limit='+limit, true);
+
                     //Envoie les informations du header adaptées avec la requête
                     xhr.setRequestHeader("Content-Type", "application/json");
                     var jsonResponse1;
@@ -431,7 +443,6 @@ function changeThings(usersName,language,nbMonths){ /*To update with the value t
                        }
                     }
 
-                         }
                     }
 
 
@@ -447,3 +458,13 @@ function changeThings(usersName,language,nbMonths){ /*To update with the value t
     
 }
 
+function hide_show_categories() {
+    self = document.getElementById("category_tab_switcher");
+    tab = document.getElementById("innerTab");
+    if(tab.hidden) {
+        self.innerHTML = "˄˄ Hide all the last edits of the user ˄˄";
+    } else {
+        self.innerHTML = "˅˅ Show all the last edits ˅˅";
+    }
+    tab.hidden= !tab.hidden;
+}
