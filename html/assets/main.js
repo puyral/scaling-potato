@@ -281,7 +281,7 @@ function changeThings(usersName, language, nbMonths) {
         var xhr = new XMLHttpRequest();
         xhr.open(
           "POST",
-          DOMAIN + "api/" + language + "/category?limit=" + limit,
+          DOMAIN + "/api/" + language + "/category?limit=" + limit,
           true
         );
 
