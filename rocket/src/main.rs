@@ -15,6 +15,10 @@ use rocket_contrib::databases::rusqlite::Connection;
 use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 use crate::categories::category::category_hash::CategoryHash;
+use rocket_contrib::templates::Template;
+use std::path::{Path, PathBuf};
+use rocket::State;
+use rocket::fairing::AdHoc;
 
 pub mod api;
 pub mod categories;
@@ -23,14 +27,23 @@ mod sql_interface;
 
 #[database("db")]
 pub struct Db(rusqlite::Connection);
+struct AssetsDir(String);
+struct Domain(String);
 
 pub type Categories = HashMap<String, CategoryHash>;
 
 const DB_LOCATION: &str = "../wikipedia-db/db.sqlite";
 
 #[get("/")]
-fn index() -> &'static str {
-    "Hello, the world!"
+fn index(domain: State<Domain>) -> Template {
+    let mut context = HashMap::new();
+    context.insert("assets", domain.0.to_owned()+"/assets");
+    Template::render("index", &context)
+}
+
+#[get("/<asset..>")]
+fn assets(asset: PathBuf, assets_dir: State<AssetsDir>) -> Option<NamedFile> {
+    NamedFile::open(Path::new(&assets_dir.0).join(asset)).ok()
 }
 
 #[get("/dump")]
@@ -57,6 +70,32 @@ fn main() {
         .manage(CategoryHash::generate(
             Connection::open(DB_LOCATION).unwrap(),
         ))
+
+        // templates
+        .attach(Template::fairing())
+
+        // assets
+        .mount("/assets", routes![assets])
+        .attach(AdHoc::on_attach("Assets Config", |rocket| {
+            let assets_dir = rocket.config()
+                .get_str("assets_dir")
+                .unwrap_or("assets/")
+                .to_string();
+
+            Ok(rocket.manage(AssetsDir(assets_dir)))
+        }))
+
+        // domain
+        .attach(AdHoc::on_attach("Domain Config", |rocket| {
+            let domain = rocket.config()
+                .get_str("domain")
+                .unwrap_or("http://localhost:8000")
+                .to_string();
+
+            Ok(rocket.manage(Domain(domain)))
+        }))
+
+        // routes
         .mount("/", routes![index, dump_db])
         .mount(
             "/api",
