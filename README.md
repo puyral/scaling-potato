@@ -15,4 +15,4 @@ To display the information: we want to be inspired by GitLab's. We think that th
 Some other data that we can consider are the number of visitors of a given pages, the number of hyperlink, the number of reference etc… Whether the information really is up to date can be also an interesting question.
 
 ## access
-Can be access [mpri.puyral.ml](mpri.puyral.ml).
+Can be access [scaling-potato.ml](scaling-potato.ml).
