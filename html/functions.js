@@ -93,7 +93,7 @@ function fillPage(usersC,language,L,n,D,j,nbMainCat){/* Will display on screen t
 
 function createTimestemps(date,D){ /* D est le nombre de mois */
 
-    var timestamps = "2021-02-01T14:56:00Z";
+    var timestamps = date;
     var m1 = parseInt(timestamps[6]);
     var m2 = parseInt(timestamps[5]);
     var m3 = parseInt(timestamps[3]);
@@ -297,10 +297,9 @@ function getURLindexpage(language,L){
                 url = url + "?origin=*";
                 Object.keys(params).forEach(function(key){url += "&" + key + "=" + params[key];}); /*Constructing the url*/
                 listURL .push(url)
-                
-
 
     }
     return listURL ;
     
 }
+
