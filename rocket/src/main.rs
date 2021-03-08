@@ -92,7 +92,7 @@ fn main() {
         .attach(AdHoc::on_attach("Domain Config", |rocket| {
             let domain = rocket.config()
                 .get_str("domain")
-                .unwrap_or("http://localhost:8000")
+                .unwrap()
                 .to_string();
 
             Ok(rocket.manage(Domain(domain)))

@@ -12,4 +12,4 @@ domain = "http://localhost:8000"
 domain = "http://puyral.ml:8000"
 
 [production]
-assets_dir = "https://scaling-potato.ml"
+domain = "https://scaling-potato.ml"
