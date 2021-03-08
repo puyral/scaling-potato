@@ -277,7 +277,7 @@ function changeThings(usersName, language, nbMonths) {
 
         /*-> Premier appel */
         var limit = 10;
-
+        console.log(DOMAIN);
         var xhr = new XMLHttpRequest();
         xhr.open(
           "POST",
