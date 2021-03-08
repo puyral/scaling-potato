@@ -14,16 +14,40 @@ function getValue() {  /* function to get the value in the input*/
 function createURLpage(name,language){   /*  Creer le lien pour la page wikipedia qu'on souhaite */
         name2 = name.split(' ').join('_');
         var url = "https://"+language+".wikipedia.org/wiki/"+name2;
-        var complet = "<a href="+url+ " class = "+ '"text-white">'+name+"</a>";
+        var complet = "<a href="+url+ ">"+name+"</a>";
         
         return complet;
     }
 
 function createRow(PagesEdit,DaysEdit,DeltaEdit,CategoriesEdit,language,i){  /* Creates the row off the tab */
     var URLpage = createURLpage(PagesEdit,language);
-    /*document.getElementById("innerTab").innerHTML += "<div class='row'> <div class='col bg-info' >"+URLpage+"</div> <div class='col bg-info' >"+DaysEdit+"  </div> <div class='col bg-info' > "+DeltaEdit+" </div> <div class='col bg-info' > "+CategoriesEdit+" </div></div>"; */
    
-    document.getElementById("innerTab").innerHTML += "<div class='row'> <div class='col-2 bg-info  border' >"+URLpage+"</div> <div class='col-2 bg-info  border' >"+DaysEdit+"  </div> <div class='col-1 bg-info  border' > "+DeltaEdit+" </div> <div class='col-6 bg-info  border' > <div class='row' id = "+((i+1)*1000+1)+" hidden = true >"+CategoriesEdit+" </div><div class= 'row'><button type='button' class ='btn btn-success mb-2' onclick= "+'" displayValue(+'+((i+1)*1000+1)+','+10+');"'+">See categories </button></div></div></div>";
+    // document.getElementById("innerTab").innerHTML += "<div class='row'> <div class='col-2 bg-info  border' >"+URLpage+"</div> <div class='col-2 bg-info  border' >"+DaysEdit+"  </div> <div class='col-1 bg-info  border' > "+DeltaEdit+" </div> <div class='col-6 bg-info  border' > <div class='row' id = "+((i+1)*1000+1)+" hidden = true >"+CategoriesEdit+" </div><div class= 'row'><button type='button' class ='btn btn-success mb-2' onclick= "+'" displayValue(+'+((i+1)*1000+1)+','+10+');"'+">See categories </button></div></div></div>";
+
+    document.getElementById("innerTab").innerHTML +=
+        `<tr>
+            <td>
+                ${URLpage}
+            </td>
+            <td>
+                ${(new Date(Date.parse(DaysEdit))).toDateString()}
+            </td>
+            <td>
+                ${DeltaEdit}
+            </td>
+            <td id=${((i+1)*1000+1)}>
+                <p id=${((i+1)*1000+1)} hidden=true>
+                    ${CategoriesEdit}
+                </p>
+                <button 
+                    type='button' 
+                    class ='btn btn-success mb-2' 
+                    onclick="displayValue(+'${((i+1)*1000+1)}','10');">
+                    See categories
+                </button>
+            </td>
+        </tr>`
+
 }
 
 function createRows(usersC,L,language,plateau,separation){/* Go through all the queries the users made (usersC), and display in a tab the differentes queries with relevant information  */ 
