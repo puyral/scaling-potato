@@ -7,18 +7,16 @@ extern crate rocket;
 extern crate rocket_contrib;
 
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 
-use rocket::http::Method;
+
 use rocket::response::NamedFile;
+use rocket::State;
 use rocket_contrib::databases::rusqlite;
 use rocket_contrib::databases::rusqlite::Connection;
-use rocket_cors::{AllowedHeaders, AllowedOrigins};
+
 
 use crate::categories::category::category_hash::CategoryHash;
-use rocket_contrib::templates::Template;
-use std::path::{Path, PathBuf};
-use rocket::State;
-use rocket::fairing::AdHoc;
 
 pub mod api;
 pub mod categories;
@@ -38,6 +36,7 @@ const DB_LOCATION: &str = "../wikipedia-db/db.sqlite";
 fn index(domain: State<Domain>) -> Template {
     let mut context = HashMap::new();
     context.insert("assets", domain.0.to_owned()+"/assets");
+    // context.insert("domain", domain.0.to_owned());
     Template::render("index", &context)
 }
 
