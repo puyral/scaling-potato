@@ -9,18 +9,16 @@ extern crate rocket_contrib;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
-
+use rocket::fairing::AdHoc;
+use rocket::http::Method;
 use rocket::response::NamedFile;
 use rocket::State;
 use rocket_contrib::databases::rusqlite;
 use rocket_contrib::databases::rusqlite::Connection;
-
+use rocket_contrib::templates::Template;
+use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 use crate::categories::category::category_hash::CategoryHash;
-use rocket_contrib::templates::Template;
-use rocket::fairing::AdHoc;
-use rocket_cors::{AllowedHeaders, AllowedOrigins};
-use rocket::http::Method;
 
 pub mod api;
 pub mod categories;
@@ -75,7 +73,9 @@ fn main() {
         ))
 
         // templates
-        .attach(Template::fairing())
+        .attach(Template::custom(|engine|{
+            engine.tera.autoescape_on(vec![]);
+        }))
 
         // assets
         .mount("/assets", routes![assets])
