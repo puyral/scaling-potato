@@ -21,6 +21,12 @@ function createURLpage(name, language) {
   return complet;
 }
 
+var categoriesEditsArray = [];
+
+function categoriesEditsArrayAlert(i){
+    alert(categoriesEditsArray[i].replaceAll(' </br>', "\n"));
+}
+
 function createRow(
   PagesEdit,
   DaysEdit,
@@ -34,6 +40,8 @@ function createRow(
 
   // document.getElementById("innerTab").innerHTML += "<div class='row'> <div class='col-2 bg-info  border' >"+URLpage+"</div> <div class='col-2 bg-info  border' >"+DaysEdit+"  </div> <div class='col-1 bg-info  border' > "+DeltaEdit+" </div> <div class='col-6 bg-info  border' > <div class='row' id = "+((i+1)*1000+1)+" hidden = true >"+CategoriesEdit+" </div><div class= 'row'><button type='button' class ='btn btn-success mb-2' onclick= "+'" displayValue(+'+((i+1)*1000+1)+','+10+');"'+">See categories </button></div></div></div>";
 
+  categoriesEditsArray[i]=""+CategoriesEdit;
+
   document.getElementById("innerTab").innerHTML += `<tr>
             <td>
                 ${URLpage}
@@ -44,19 +52,24 @@ function createRow(
             <td>
                 ${DeltaEdit}
             </td>
-            <td id=${(i + 1) * 1000 + 1}>
+            <td >
                 <p id=${(i + 1) * 1000 + 1} hidden=true>
                     ${CategoriesEdit}
                 </p>
                 <button 
                     type='button' 
                     class ='btn btn-success mb-2' 
-                    onclick="displayValue(+'${(i + 1) * 1000 + 1}','10');">
+                    onclick="categoriesEditsArrayAlert(${i});"
+                    >
                     See categories
                 </button>
             </td>
         </tr>`;
+
+        
 }
+
+//<!--onclick="displayValue(+'${(i + 1) * 1000 + 1}','10');--!>
 
 function createRows(usersC, L, language, plateau, separation) {
   /* Go through all the queries the users made (usersC), and display in a tab the differentes queries with relevant information  */
@@ -207,6 +220,7 @@ function createBlock(n, D) {
         "<div class='col bg-info' hidden = true id =" + i + "  ></div>";
     }
   }
+  document.getElementById("displayInfo").hidden = false;
 }
 
 function displayValue(i, n) {

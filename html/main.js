@@ -1,9 +1,6 @@
 function changeThings(usersName, language, nbMonths) {
   /*To update with the value that we get from the input*/
 
-  /*document.getElementById("container")*/
-  document.getElementById("Loading").hidden = false;
-
   /*  FIRST REQUEST, TO GET THE USERS MAIN INFO*/
 
   var url = "https://" + language + ".wikipedia.org/w/api.php";
@@ -63,24 +60,7 @@ function changeThings(usersName, language, nbMonths) {
   ).then((resp) => {
     //document.getElementById("tab").innerHTML = "<div class='row'><button type='button' class ='btn btn-success mb-2' onclick= "+'" displayValue(innerTab);"'+">Display all the last queries of the users </button> </div>";
     //document.getElementById("tab").innerHTML += "<div class='row' > <div class='col-2 bg-primary' > <strong>Page</strong> </div> <div class='col-2 bg-primary' > <strong>Jour de l'édit </strong> </div> <div class='col-1 bg-primary' ><strong> DeltaSize </strong> </div> <div class='col-7 bg-primary' > <strong>Categories</strong>  </div></div>";
-
-    document.getElementById("tab").innerHTML = `<p id="category_tab_switcher_p">
-                <a 
-                    id="category_tab_switcher" 
-                    onclick="hide_show_categories();">
-                    ˅˅ Show all the last edits ˅˅
-                </a>
-            </p>
-            <table id ='innerTab' hidden = true>
-                <tr>
-                    <th style="border-radius: 6px 0px 0px 0px;">Page</th>
-                    <th>Day</th>
-                    <th>Size</th>
-                    <th style="border-radius: 0px 6px 0px 0px;">Categories</th>
-                </tr>
-            </table>
-
-            `;
+    document.getElementById("tab_box").hidden = false;
 
     var usercontribs = {};
     var NumberQueries = 0;
@@ -161,6 +141,9 @@ function changeThings(usersName, language, nbMonths) {
     var series = chart.column(actionByMonths);
     chart.container("container");
     chart.draw();
+
+    // show the graph
+    document.getElementById("container").hidden = false;
 
     /* -> SORT usersC */
     var usersC = usersC.sort(function (a, b) {
@@ -288,8 +271,12 @@ function changeThings(usersName, language, nbMonths) {
 
         /* WE CALL THE SERVER AND GET THE RESPONSE */
 
+        // ====================================================== //
+        // ======================== Limit ======================= //
+        // ====================================================== //
+
         /*-> Premier appel */
-        var limit = 7;
+        var limit = 10;
 
         var xhr = new XMLHttpRequest();
         xhr.open(
@@ -421,6 +408,8 @@ function changeThings(usersName, language, nbMonths) {
                     ]).then(function (response) {
                       Cat = [[], []];
                       var correspondanceNameWeightFinal = [{}, {}];
+                      // [correspondance for 0, correspondance for 1]
+
                       for (var i = 0; i < 2; i++) {
                         for (var u in response[i].query.pages) {
                           Cat[i].push(response[i].query.pages[u].title);
@@ -438,9 +427,8 @@ function changeThings(usersName, language, nbMonths) {
                       /*SOME STUFF TO DO, TO BE DRAW AND DISPLAY.*/
 
                       var sortedpageViews = pageViews.sort(function (a, b) {
-                        /*We sort the contribution by the absolute value of delta size. */ if (
-                          a[2] < b[2]
-                        ) {
+                        /*We sort the contribution by the absolute value of delta size. */
+                        if (a[2] < b[2]) {
                           return 1;
                         }
                         if (b[2] < a[2]) {
@@ -448,16 +436,45 @@ function changeThings(usersName, language, nbMonths) {
                         }
                         return 0;
                       });
-                      createRows(usersC, L, language, plateau);
 
-                      L1 = sortedpageViews.slice(0, 5);
+                      /* generate_main_categories_panel(
+                        correspondanceNameWeightFinal,
+                        Cat,
+                        limit
+                      ); */
+
+                      var pie = [
+                        Object.keys(correspondanceNameWeightFinal[0]).map(
+                          (c) => ({
+                            x: c.split(/:(.+)/)[1],
+                            value: correspondanceNameWeightFinal[0][c],
+                          })
+                        ),
+                        Object.keys(correspondanceNameWeightFinal[1]).map(
+                          (c) => ({
+                            x: c.split(/:(.+)/)[1],
+                            value: correspondanceNameWeightFinal[1][c],
+                          })
+                        ),
+                        //Object.keys(correspondanceNameWeightFinal[1]).map(c =>{"x": c, "value": weicorrespondanceNameWeightFinalghts[1][c]})
+                      ];
+
+                      make_graph(pie[0], "make_graph_0", "Number of contributions");
+                      make_graph(pie[1], "make_graph_1", "Size of contributions");
+
+                      // last table
+                      createRows(usersC, L, language, plateau);
+                      document.getElementById("displayInfo0").hidden = false;
+                      document.getElementById("displayInfo1").hidden = false;
+
+                      /*  L1 = sortedpageViews.slice(0, 5);
                       L2 = sortedpageViews.slice(6, 10);
                       L3 = sortedpageViews.slice(11, 15);
                       LCat = [L1, L2, L3, L1, L2, L3, L1];
 
-                      nbMainCat = limit; /* Maincat number between 2 and 5 ? */
+                      nbMainCat = limit; 
 
-                      /* IN THE END WE FINISH BY PRINTING SOME STUFF */
+                   
 
                       createBlock(nbMainCat, Cat);
                       for (y = 0; y < nbMainCat; y++) {
@@ -470,8 +487,7 @@ function changeThings(usersName, language, nbMonths) {
                           y,
                           nbMainCat
                         );
-                      }
-                      document.getElementById("Loading").hidden = true;
+                      } */
                     });
                   }
                 };
@@ -493,4 +509,97 @@ function hide_show_categories() {
     self.innerHTML = "˅˅ Show all the last edits ˅˅";
   }
   tab.hidden = !tab.hidden;
+}
+
+/* function generate_main_categories_panel(weights, categories, limit_old) {
+  // Object.keys(dictionary).length
+  var limit = Math.min(
+    limit_old,
+    Object.keys(weights[0]).length,
+    Object.keys(weights[1]).length,
+    Object.keys(categories[0]).length,
+    Object.keys(categories[1]).length
+  );
+
+  // 0 -> page rank
+  // 1 -> n rank
+    var pie = [
+      Object.keys(weights[0]).map(c => {"x": c, "value": weights[0][c]}),
+      Object.keys(weights[1]).map(c =>{"x": c, "value": weights[1][c]})
+    ];
+
+  document.getElementById("displayInfo").innerHTML = 
+    `${generate_blocks(categories_0, weights_0, limit, "category_line_0")}
+    ${generate_blocks(categories_1, weights_1, limit, "category_line_1")}`;
+
+    document.getElementById("displayInfo").hidden=false;
+
+
+    function make_pie(data, id){
+      anychart.onDocumentReady(function () {
+        // create pie chart with passed data
+        var chart = anychart.pie(data);
+  
+        // set chart title text settings
+        chart
+          // set chart radius
+          .radius('43%');
+  
+        // set container id for the chart
+        chart.container('container');
+        // initiate chart drawing
+        chart.draw();
+      });
+    }
+
+    
+
+
+  
+  
+  function generate_blocks(categories, weight, n, id){
+    console.log(weight)
+    var max = Math.max(...weight);
+    console.log(max)
+    var ret =`
+    <div 
+      id=${id}
+      class="imp_cat_main_block"
+      style="height:50%;"
+      >`;
+    for(var i=0; i<n; i++){
+      var height = weight[i]/max*90;
+      console.log(height)
+      var biso = "";
+      if(i==0){
+        biso="border-radius: 0px 0px 6px 0px;"
+      } else if(i==n) {
+        biso="border-radius: 0px 0px 0px 6px;"
+      }
+      ret +=
+        `<div style="width: ${1/n*100}%; display: inline-block;">
+          <div class="left_${id}$ style="background-color:green; height: ${100-height}%;"> &nbsp; </div>
+          <div 
+          style="height: ${height}%; ${biso} background-color:green; overflow: visible;">
+          <p style="margin:0px;">${categories[i].split(/:(.+)/)[1]}</p>
+          </div>
+        </div>`
+    }
+
+    ret+="</div>";
+    return ret;
+  }
+
+} */
+
+function make_graph(data, id, title) {
+  var chart = anychart.tagCloud(data);
+
+  chart.title(title)
+
+  // set the container id
+  chart.container(id);
+
+  // initiate drawing the chart
+  chart.draw();
 }

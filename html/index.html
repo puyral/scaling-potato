@@ -23,6 +23,8 @@
     <script src="https://cdn.anychart.com/releases/v8/js/anychart-core.min.js"></script>
 
     <script src="https://cdn.anychart.com/releases/v8/js/anychart-cartesian.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-data-adapter.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.9.0/js/anychart-tag-cloud.min.js"></script>
 
 
     <link rel="stylesheet" href="styles.css">
@@ -124,41 +126,37 @@
         </table>
     </div>
 
-
-    <div class="box_container" id="displayInfo">
-        <div class='col-3 bg-white' id=titleInfo>
-        </div>
-
-        <div class='col bg-white' id=infoQueries>
-        </div>
-
+    <div class="box_container" hidden=true id="container">
     </div>
 
-    <div class="box_container" id="container">
+    <div class="box_container" id="displayInfo0" hidden=true>
+        <div id="make_graph_0" style="height: 13cm;"></div>
     </div>
 
-    <div class="box_container">
+    <div class="box_container" id="displayInfo1" hidden=true>
+        <div id="make_graph_1" style="height: 13cm;"></div>
+    </div>
+
+    <div id="tab_box" hidden=true class="box_container">
         <h1>Principale topics the users edits:</h1>
         <div id="tab">
-
+            <p id="category_tab_switcher_p">
+                <a 
+                    id="category_tab_switcher" 
+                    onclick="hide_show_categories();">
+                    ˅˅ Show all the last edits ˅˅
+                </a>
+            </p>
+            <table id ='innerTab' hidden = true>
+                <tr>
+                    <th style="border-radius: 6px 0px 0px 0px; width: 40%;">Page</th>
+                    <th>Day</th>
+                    <th>Delta size</th>
+                    <th style="border-radius: 0px 6px 0px 0px; width: 20%;">Categories</th>
+                </tr>
+            </table>
         </div>
     </div>
-
-
-    <div class="container ">
-
-        <div class="container ">
-
-
-
-            <!-- All the queries he did  -->
-
-            <!--<p id="infoE"></p> -->
-            <div class="row mt-3" id="Loading" hidden=true>
-
-                <img src="{{ assets }}/Loading.gif" alt="Loading" title="A moment please!">
-            </div>
-        </div>
 </body>
 
 </html>
