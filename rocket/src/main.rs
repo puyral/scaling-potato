@@ -8,9 +8,11 @@ extern crate rocket_contrib;
 
 use std::collections::HashMap;
 
+use rocket::http::Method;
 use rocket::response::NamedFile;
 use rocket_contrib::databases::rusqlite;
 use rocket_contrib::databases::rusqlite::Connection;
+use rocket_cors::{AllowedHeaders, AllowedOrigins};
 
 use crate::categories::category::category_hash::CategoryHash;
 use rocket_contrib::templates::Template;
@@ -49,7 +51,20 @@ fn dump_db()-> Option<NamedFile>{
     NamedFile::open(DB_LOCATION).ok()
 }
 
+
 fn main() {
+    let allowed_origins = AllowedOrigins::All;
+
+    // You can also deserialize this
+    let cors = rocket_cors::CorsOptions {
+        allowed_origins,
+        allowed_methods: vec![Method::Get,Method::Post].into_iter().map(From::from).collect(),
+        allowed_headers: AllowedHeaders::All,
+        allow_credentials: true,
+        ..Default::default()
+    }
+        .to_cors().unwrap();
+
     rocket::ignite()
         .attach(Db::fairing())
         .manage(CategoryHash::generate(
@@ -91,5 +106,9 @@ fn main() {
                 api::simple_category_get_title
             ],
         )
+
+        // CORS
+        .attach(cors)
+
         .launch();
 }
